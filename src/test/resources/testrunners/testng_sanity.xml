@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Opencart" parallel="tests" verbose="5" thread-count="2">
+
+	<test name="Login Page Tests">
+		<parameter name="browser" value="chrome"></parameter>
+		<classes>
+			<class name="com.qa.opencart.tests.LoginPageTest" />
+		</classes>
+	</test> <!--
+	Test -->
+
+	<test name="Account Page Tests">
+		<parameter name="browser" value="edge"></parameter>
+		<classes>
+			<class name="com.qa.opencart.tests.AccountPageTest" />
+		</classes>
+	</test> <!--
+	Test -->
+
+</suite> <!--
+Suite -->
