@@ -22,33 +22,38 @@ public class PlaceOrderTest extends BaseTest{
 	}
 	
 	@Test(dataProvider = "getPlaceOrderData")
-	public void placeOrderDeliverInUK(String searchKey, String productName, String quantity, String billingCountry, String deliveryCountry) {
+	public void validatePlaceSingleItemOrders(String searchKey, String productName, String quantity, String billingCountry, String deliveryCountry) {
 		
 		int qty = Integer.parseInt(quantity);
+		
 		searchResultsPage = accPage.doSearch(searchKey);
 		productPage = searchResultsPage.navigateToProductPage(productName); 
 		productPage.addToCart(qty);
 		cartPage = productPage.navigateToCart();
 		checkoutPage = cartPage.doCheckOut();
 		checkoutPage.selectBillingAndDeliveryDetails(billingCountry, deliveryCountry);
+		
 		softAssert = new SoftAssert();
 		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
+		
 		softAssert.assertTrue(checkoutPage.isFlatShippingRateRadioBtnSelected());
-		stdRateAssertion.validateShippingRate(deliveryCountry);
+		
+		stdRateAssertion.validateShippingRateInDeliveryMethodStep(deliveryCountry);
+		
 		checkoutPage.selectDeliverAndPaymentMethod();
 		
 		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
-		productInfoAssertions.validateProductAssertions(productName, qty);
+		productInfoAssertions.validateProductAssertions(deliveryCountry,productName, qty);
+		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);		
+		productCalculationAssertions.validateTotalWithoutTaxes(deliveryCountry,productName, qty);
+		productCalculationAssertions.validateSubTotal(deliveryCountry,productName, qty);
+		stdRateAssertion.validateFlatShippingRate(deliveryCountry);
+		stdRateAssertion.validateEcoTax(deliveryCountry,qty);
+		productCalculationAssertions.validateVAT(deliveryCountry,productName, qty);
+		productCalculationAssertions.validateTotal(deliveryCountry,productName, qty);
 		
-		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
-		
-		productCalculationAssertions.validateTotalWithoutTaxes(productName, qty);
-		productCalculationAssertions.validateSubTotal(productName, qty);
-		stdRateAssertion.validateFlatShippingRate();
-		stdRateAssertion.validateEcoTax(qty);
-		productCalculationAssertions.validateVAT(productName, qty);
-		productCalculationAssertions.validateTotal(productName, qty);
 		String actualMsg = checkoutPage.confirmOrder();
+		
 		String expectedMsg = AppConstants.ORDER_PLACED_SUCCESS_MESSAGE;
 		
 		softAssert.assertEquals(actualMsg, expectedMsg, AppErrors.ORDER_PLACED_SUCCESS_MESSAGE_ERROR);

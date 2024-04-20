@@ -18,25 +18,30 @@ public class StandardRateAssertions {
 		this.checkoutPage = checkoutPage;
 	}
 
-	public void validateFlatShippingRate() {
-		softAssert.assertEquals(checkoutPage.getOrderDetailsForUK().get("FlatShippingRate"),
+	public void validateFlatShippingRate(String deliveryCountry) {
+		softAssert.assertEquals(checkoutPage.getOrderDetails(deliveryCountry).get("FlatShippingRate"),
 				AppConstants.getFlatShippingRateInString(), AppErrors.FLAT_SHIPPING_RATE_ERROR);
 	}
 
-	public void validateEcoTax(int quantity) {
-		String expectedEcoTax = CostCalculation.calculateEcoTaxForUK(quantity);
-		String actualEcoTax = String
-				.valueOf(StringUtil.removeSpecialCharacters(checkoutPage.getOrderDetailsForUK().get("EcoTax")));
-		softAssert.assertEquals(actualEcoTax, expectedEcoTax, AppErrors.ECO_TAX_ERROR);
+	public void validateEcoTax(String deliveryCountry, int quantity) {
+		String actualEcoTax = null;
+		if(deliveryCountry.equals("United Kingdom")) {
+			String expectedEcoTax = CostCalculation.calculateEcoTax(quantity);
+			actualEcoTax = String
+					.valueOf(StringUtil.removeSpecialCharacters(checkoutPage.getOrderDetails(deliveryCountry).get("EcoTax")));
+			softAssert.assertEquals(actualEcoTax, expectedEcoTax, AppErrors.ECO_TAX_ERROR);
+		}else {
+			softAssert.assertNull(actualEcoTax);
+		}	
 	}
 
-	public void validateShippingRate(String deliveryCountry) {
+	public void validateShippingRateInDeliveryMethodStep(String deliveryCountry) {
 		if (deliveryCountry.equals("United Kingdom")) {
 			softAssert.assertTrue(checkoutPage.getFlatShippingRateRadioBtnText()
 					.contains(AppConstants.FLAT_SHIPPING_RATE_UK_DELIVERY));
 		} else {
 			softAssert.assertTrue(checkoutPage.getFlatShippingRateRadioBtnText()
-					.contains(AppConstants.getFlatShippingRateInString()));
+					.contains(AppConstants.FLAT_SHIPPING_RATE_NON_UK_DELIVERY));
 		}
 	}
 

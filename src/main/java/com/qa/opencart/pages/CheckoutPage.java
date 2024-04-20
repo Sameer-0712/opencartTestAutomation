@@ -85,7 +85,7 @@ public class CheckoutPage {
 		List<String> details = elUtil.getElementsText(breakUpDetails);
 		orderDetails.put("SubTotal", details.get(0));
 		orderDetails.put("FlatShippingRate", details.get(1));
-		orderDetails.put("Total", details.get(4));
+		orderDetails.put("Total", details.get(2));
 	}
 	
 	private void getBreakupDetailsForUK() {
@@ -97,17 +97,21 @@ public class CheckoutPage {
 		orderDetails.put("Total", details.get(4));
 	}
 	
-	public Map<String, String> getOrderDetails() {
+	public Map<String, String> getOrderDetails(String deliveryCountry) {
 		getProductDetails();
-		getBreakupDetails();
+		if(deliveryCountry.equals("United Kingdom")) {
+			getBreakupDetailsForUK();
+		}else {
+			getBreakupDetails();
+		}	
 		return orderDetails;
 	}
 	
-	public Map<String, String> getOrderDetailsForUK() {
-		getProductDetails();
-		getBreakupDetailsForUK();
-		return orderDetails;
-	}
+//	public Map<String, String> getOrderDetailsForUK() {
+//		getProductDetails();
+//		getBreakupDetailsForUK();
+//		return orderDetails;
+//	}
 	
 	public String getOrderPlacedMessage() {
 		return elUtil.getElementText(orderPlacedMessage);

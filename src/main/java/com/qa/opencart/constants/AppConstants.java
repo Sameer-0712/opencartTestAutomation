@@ -13,6 +13,7 @@ public class AppConstants {
 	public static final double VAT = 0.2;
 	public static final double FLAT_SHIPPING_RATE = 5.00;
 	public static final String FLAT_SHIPPING_RATE_UK_DELIVERY = "$8.00";
+	public static final String FLAT_SHIPPING_RATE_NON_UK_DELIVERY = "$5.00";
 	
 	//*****************************Test Data*****************************
 	
