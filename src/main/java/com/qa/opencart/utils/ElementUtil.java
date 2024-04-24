@@ -38,7 +38,7 @@ public class ElementUtil {
 		}
 	}
 
-	private By getBy(String locatorType, String locatorTypeValue) {
+	public By getBy(String locatorType, String locatorTypeValue) {
 
 		By locator = null;
 
@@ -54,14 +54,19 @@ public class ElementUtil {
 			break;
 		case "partialLinkText":
 			locator = By.partialLinkText(locatorTypeValue);
+			break;
 		case "tagName":
 			locator = By.tagName(locatorTypeValue);
+			break;
 		case "className":
 			locator = By.className(locatorTypeValue);
+			break;
 		case "xpath":
 			locator = By.xpath(locatorTypeValue);
+			break;
 		case "cssSelector":
 			locator = By.cssSelector(locatorTypeValue);
+			break;
 
 		default:
 			break;
@@ -386,6 +391,14 @@ public class ElementUtil {
 				.withMessage(DEFAULT_ELEMENT_TIMEOUT_MESSAGE);
 
 		return wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
+	}
+	
+	public List<WebElement> waitForElementsVisibilityWithFluentWait(int timeOut, int pollingTime, By locator) {
+		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+				.pollingEvery(Duration.ofMillis(pollingTime)).ignoring(NoSuchElementException.class)
+				.withMessage(DEFAULT_ELEMENT_TIMEOUT_MESSAGE);
+
+		return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));
 	}
 
 	public Alert waitForJSAlertWithFluentWait(int timeOut, int pollingTime) {

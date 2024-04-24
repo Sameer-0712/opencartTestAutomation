@@ -40,7 +40,7 @@ public class DriverFactory {
 			Log.error("Please pass the right browser");
 			throw new BrowserExceptions("Incorrect browser name");
 		}
-		Log.info("Driver initialized...");
+		Log.info("Driver initialized");
 		getDriver().manage().window().maximize();
 		getDriver().manage().deleteAllCookies();
 		getDriver().get(prop.getProperty("url"));
@@ -86,7 +86,7 @@ public class DriverFactory {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
-		Log.info("Running the tests on: "+envName);
+		Log.info("Running the tests on: "+envName+" environment");
 		return prop;
 	}
 }

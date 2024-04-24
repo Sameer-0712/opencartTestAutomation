@@ -83,7 +83,7 @@ public class CartPage {
 	}
 	
 	public CheckoutPage doCheckOut() {
-		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, checkoutBtn).click();
+		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_LONG_TIME, checkoutBtn).click();
 		return new CheckoutPage(driver);
 	}
 }

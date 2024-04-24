@@ -2,13 +2,21 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Opencart" verbose="5">
 
-	<test name="Place Order Tests">
+	<test name="Place Single Items Tests">
 		<parameter name="browser" value="chrome" />
 		<classes>
 			<class name="com.qa.opencart.tests.PlaceOrderTest" />
 		</classes>
-	</test> <!--
-	Test -->
+	</test> 
+	
+	
+	<test name="Place Multiple Items Tests">
+		<parameter name="browser" value="chrome" />
+		<classes>
+			<class name="com.qa.opencart.tests.PlaceMultipleItemsOrderTest" />
+		</classes>
+	</test> 
+	
 
 </suite> <!--
 Suite -->

@@ -42,7 +42,7 @@ public class BaseTest {
 		df = new DriverFactory();
 		prop = df.initProp();
 		if(!(browserName == null)) {
-			Log.info("Tests running on: "+browserName);
+			Log.info("Tests running on browser: "+browserName);
 			prop.setProperty("browser", browserName);
 		}
 		driver = df.initDriver(prop);

@@ -1,23 +1,24 @@
 package com.qa.opencart.pages;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import com.qa.opencart.constants.AppConstants;
+import com.qa.opencart.logger.Log;
 import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
 public class CheckoutPage {
 	
-	private WebDriver driver;
 	private ElementUtil elUtil;
-	private Map<String,String> orderDetails = new HashMap<String, String>();
+	private Map<String,String> breakUpDetails = new LinkedHashMap<String, String>();
 
 	public CheckoutPage(WebDriver driver) {
-		this.driver = driver;
 		elUtil = new ElementUtil(driver);
 	}
 	
@@ -26,9 +27,9 @@ public class CheckoutPage {
 	private By shippingMethodContinueBtn = By.cssSelector("input#button-shipping-method");
 	private By paymentMethodContinueBtn = By.cssSelector("input#button-payment-method");
 	private By termsAndConditionsCheckbox = By.name("agree");
-	private By productDetails = By.xpath("//table[@class='table table-bordered table-hover']/tbody//td");
-	private By productNameInProductDetails = By.xpath("//table[@class='table table-bordered table-hover']/tbody//td/a");
-	private By breakUpDetails = By.xpath("//tfoot//td[2]");
+	private String productDetailsXpath = "//table[@class='table table-bordered table-hover']/tbody/tr/td";
+	private String productRow = "//table[@class='table table-bordered table-hover']/tbody/tr";
+	private By breakUpDetailsXpath = By.xpath("//tfoot//td[2]");
 	private By billingAddressDropdown = By.name("address_id");
 	private By deliveryAddressDropdown = By.cssSelector("#collapse-shipping-address .form-control");
 	private By orderPlacedMessage = By.xpath("//h1");
@@ -45,10 +46,12 @@ public class CheckoutPage {
 	public void selectBillingAndDeliveryDetails(String billingCountry, String deliveryCountry) {
 		
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, detailsSectionExpanded);
+		Log.info("Selecting address from Billing Country: "+billingCountry);
 		elUtil.doSelectByPartialText(billingAddressDropdown, billingCountry);
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, billingDetailsContinueBtn).click();	
 		
 		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME, shippingAddressCollapsed, "class", "collapse in");
+		Log.info("Selecting address from Delivery Country: "+deliveryCountry);
 		elUtil.doSelectByPartialText(deliveryAddressDropdown, deliveryCountry);
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, shippingDetailsContinueBtn).click();
 	
@@ -71,47 +74,32 @@ public class CheckoutPage {
 		return orderPlacedMessageString;
 	}
 	
-	private void getProductDetails() {	
-		elUtil.waitForElementsPresenceWithFluentWait(TimeUtil.DEFAULT_MEDIUM_TIME, 1, productDetails);
-		List<String> details = elUtil.getElementsText(productDetails);
-		orderDetails.put("ProductName", elUtil.getElementText(productNameInProductDetails));
-		orderDetails.put("Model", details.get(1));
-		orderDetails.put("Quantity", details.get(2));
-		orderDetails.put("UnitPrice", details.get(3));
-		orderDetails.put("TotalBeforeTaxes", details.get(4));
-	}
-	
-	private void getBreakupDetails() {
-		List<String> details = elUtil.getElementsText(breakUpDetails);
-		orderDetails.put("SubTotal", details.get(0));
-		orderDetails.put("FlatShippingRate", details.get(1));
-		orderDetails.put("Total", details.get(2));
+	private void getBreakupDetailsForNonUK() {
+		List<String> details = elUtil.getElementsText(breakUpDetailsXpath);
+		breakUpDetails.put("SubTotal", details.get(0));
+		breakUpDetails.put("FlatShippingRate", details.get(1));
+		breakUpDetails.put("Total", details.get(2));
 	}
 	
 	private void getBreakupDetailsForUK() {
-		List<String> details = elUtil.getElementsText(breakUpDetails);
-		orderDetails.put("SubTotal", details.get(0));
-		orderDetails.put("FlatShippingRate", details.get(1));
-		orderDetails.put("EcoTax", details.get(2));
-		orderDetails.put("VAT", details.get(3));
-		orderDetails.put("Total", details.get(4));
+		List<String> details = elUtil.getElementsText(breakUpDetailsXpath);
+		breakUpDetails.put("SubTotal", details.get(0));
+		breakUpDetails.put("FlatShippingRate", details.get(1));
+		breakUpDetails.put("EcoTax", details.get(2));
+		breakUpDetails.put("VAT", details.get(3));
+		breakUpDetails.put("Total", details.get(4));
 	}
 	
-	public Map<String, String> getOrderDetails(String deliveryCountry) {
-		getProductDetails();
-		if(deliveryCountry.equals("United Kingdom")) {
+	public Map<String, String> getBreakUpDetails(String deliveryCountry) {
+//		getProductDetails();
+		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
 			getBreakupDetailsForUK();
 		}else {
-			getBreakupDetails();
+			getBreakupDetailsForNonUK();
 		}	
-		return orderDetails;
+		return breakUpDetails;
 	}
 	
-//	public Map<String, String> getOrderDetailsForUK() {
-//		getProductDetails();
-//		getBreakupDetailsForUK();
-//		return orderDetails;
-//	}
 	
 	public String getOrderPlacedMessage() {
 		return elUtil.getElementText(orderPlacedMessage);
@@ -124,6 +112,42 @@ public class CheckoutPage {
 	
 	public String getFlatShippingRateRadioBtnText() {
 		return elUtil.getElementText(shippingRateRadioBtnText);
+	}
+	
+	public Map<String, String[]> getProductDetailsInMap() {
+		
+		By locator = elUtil.getBy("xpath", productDetailsXpath);
+		elUtil.waitForElementsVisibilityWithFluentWait(TimeUtil.DEFAULT_MEDIUM_TIME, 1, locator);
+		
+		Map<String,String[]> infoMap = new LinkedHashMap<String,String[]>();
+		int rows = elUtil.getElements(elUtil.getBy("xpath", productRow)).size();	
+		for(int i=1;i<=rows;i++) {
+			infoMap.put(getProductFromRow(i), getProductInfo(getProductFromRow(i)));
+		}
+		return infoMap;
+	}
+	
+	private String getProductFromRow(int rowNum) {
+		String xpath = productRow+"["+rowNum+"]//a";
+		return elUtil.getElementText(elUtil.getBy("xpath", xpath));
+	}
+	
+	private String[] getProductInfo(String productName) {
+		String xpath = "//table[@class='table table-bordered table-hover']//a[normalize-space()='"+productName+"']/parent::td/following-sibling::td";
+		return elUtil.getElementsText(elUtil.getBy("xpath", xpath)).toArray(new String[0]);
+	}
+	
+	public Map<String, String> getProductQuantityMap() {
+		Map<String,String> prodQuantity = new LinkedHashMap<String,String>();
+		for(Entry<String,String[]> entry:getProductDetailsInMap().entrySet()) {
+			prodQuantity.put(entry.getKey(),entry.getValue()[1]);
+		}
+		return prodQuantity;
+	}
+	
+	public List<String> getProducts() {
+		String xpath = productRow+"//a";
+		return elUtil.getElementsText(elUtil.getBy("xpath", xpath));
 	}
 
 }
