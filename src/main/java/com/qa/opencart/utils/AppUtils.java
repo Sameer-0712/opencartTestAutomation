@@ -8,6 +8,8 @@ import com.qa.opencart.pages.CheckoutPage;
 import com.qa.opencart.pages.ProductPage;
 import com.qa.opencart.pages.SearchResultsPage;
 
+import io.qameta.allure.Step;
+
 public class AppUtils {
 	
 	private AccountPage accPage;
@@ -25,6 +27,7 @@ public class AppUtils {
 		this.checkoutPage = checkoutPage;
 	}
 	
+	@Step("Navigate to the checkout page and fill the details")
 	public CheckoutPage navigateToCheckOutPageAndFillDetails(String billingCountry, String deliveryCountry) {
 		cartPage = productPage.navigateToCart();
 		checkoutPage = cartPage.doCheckOut();
@@ -33,6 +36,7 @@ public class AppUtils {
 		return checkoutPage;
 	}
 
+	@Step("Search product with {0} and add product {1} with quantity {2}")
 	public void addProductToCart(String searchKey, String productName, String quantity) {
 
 		int qty = Integer.parseInt(quantity);

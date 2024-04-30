@@ -21,6 +21,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.qa.opencart.exceptions.ElementExceptions;
 import com.qa.opencart.logger.Log;
 
+import io.qameta.allure.Step;
+
 public class ElementUtil {
 
 	private WebDriver driver;
@@ -75,6 +77,7 @@ public class ElementUtil {
 		return locator;
 	}
 
+	@Step("Fetch the element with locator {0}")
 	public WebElement getElement(By locator) {
 
 		WebElement element = null;
@@ -91,10 +94,12 @@ public class ElementUtil {
 		return getElement(getBy(locatorType, locatorTypeValue));
 	}
 
+	@Step("Click the element located at {0}")
 	public void clickElement(By locator) {
 		getElement(locator).click();
 	}
 
+	@Step("Send text {1} to locator {0}")
 	public void sendKeysToElement(By locator, String text) {
 		nullBlankCheck(text);
 		getElement(locator).clear();
@@ -113,6 +118,7 @@ public class ElementUtil {
 		return getElements(locator).size();
 	}
 
+	@Step("Fetch the text of the element located by {0}")
 	public String getElementText(By locator) {
 		return getElement(locator).getText();
 	}
@@ -153,6 +159,7 @@ public class ElementUtil {
 		return false;
 	}
 
+	@Step("Verify if the element located by {0} is selected")
 	public boolean isElementSelected(By locator) {
 		return getElement(locator).isSelected();
 	}
@@ -305,6 +312,7 @@ public class ElementUtil {
 		return wait.until(ExpectedConditions.alertIsPresent());
 	}
 
+	@Step("Wait for the page title to be {0}")
 	public String waitForPageTitleIs(int timeOut, String title) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
 
@@ -365,11 +373,13 @@ public class ElementUtil {
 		return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
 	}
 
+	@Step("Wait for {0} seconds for the element located at {1}")
 	public WebElement waitForElementVisibility(int timeOut, By locator) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
 	}
 
+	@Step("Wait for {0} seconds for the element ,located by {1}, for attribute {2} to contain {3}")
 	public Boolean waitForElementAttributeToContain(int timeOut, By locator, String attribute, String value) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
 		return wait.until(ExpectedConditions.attributeContains(locator, attribute, value));
@@ -393,6 +403,7 @@ public class ElementUtil {
 		return wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
 	}
 	
+	@Step("Wait for {0} seconds with polling time of {1} milliseconds for the element located at {2}")
 	public List<WebElement> waitForElementsVisibilityWithFluentWait(int timeOut, int pollingTime, By locator) {
 		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.pollingEvery(Duration.ofMillis(pollingTime)).ignoring(NoSuchElementException.class)

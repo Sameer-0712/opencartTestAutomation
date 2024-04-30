@@ -9,6 +9,8 @@ import com.qa.opencart.utils.CostCalculation;
 import com.qa.opencart.utils.ExcelUtil;
 import com.qa.opencart.utils.StringUtil;
 
+import io.qameta.allure.Step;
+
 public class StandardRateAssertions {
 
 	private SoftAssert softAssert;
@@ -19,11 +21,13 @@ public class StandardRateAssertions {
 		this.checkoutPage = checkoutPage;
 	}
 
+	@Step("Verify the shipping rate for the delivery country {0}")
 	public void validateFlatShippingRate(String deliveryCountry) {
 		softAssert.assertEquals(checkoutPage.getBreakUpDetails(deliveryCountry).get("FlatShippingRate"),
 				AppConstants.getFlatShippingRateInString(), AppErrors.FLAT_SHIPPING_RATE_ERROR);
 	}
 
+	@Step("Verify the eco tax for the quantity {1}")
 	public void validateEcoTax(String deliveryCountry, int quantity) {
 		String actualEcoTax = null;
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
@@ -36,6 +40,7 @@ public class StandardRateAssertions {
 		}	
 	}
 
+	@Step("Validate the shipping rate for {0} in the delivery method")
 	public void validateShippingRateInDeliveryMethodStep(String deliveryCountry) {
 		if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
 			softAssert.assertTrue(checkoutPage.getFlatShippingRateRadioBtnText()

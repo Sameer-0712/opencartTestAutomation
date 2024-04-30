@@ -12,6 +12,8 @@ import org.openqa.selenium.WebElement;
 import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
+import io.qameta.allure.Step;
+
 public class ProductPage {
 	
 	private WebDriver driver;
@@ -68,6 +70,7 @@ public class ProductPage {
 		return elUtil.getElementText(elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, addToCartSuccessMsg));
 	}
 	
+	@Step("Navigate to the cart page")
 	public CartPage navigateToCart() {
 		elUtil.clickElement(shoppingCart);
 		return new CartPage(driver);

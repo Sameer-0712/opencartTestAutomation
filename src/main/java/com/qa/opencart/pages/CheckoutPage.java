@@ -13,6 +13,8 @@ import com.qa.opencart.logger.Log;
 import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
+import io.qameta.allure.Step;
+
 public class CheckoutPage {
 	
 	private ElementUtil elUtil;
@@ -57,6 +59,7 @@ public class CheckoutPage {
 	
 	}
 	
+	@Step("Select the Delivery and Payment Methods")
 	public void selectDeliverAndPaymentMethod() {
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, shippingMethodContinueBtn).click();
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, termsAndConditionsCheckbox).click();
@@ -65,6 +68,7 @@ public class CheckoutPage {
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_MEDIUM_TIME, paymentMethodContinueBtn).click();
 	}
 	
+	@Step("Confirm order")
 	public String confirmOrder() {
 		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME, confirmOrderCollapsed, "class", "collapse in");
 		elUtil.clickElement(confirmOrder);
@@ -74,6 +78,7 @@ public class CheckoutPage {
 		return orderPlacedMessageString;
 	}
 	
+	@Step("Fetching the breakup details for Non-UK country")
 	private void getBreakupDetailsForNonUK() {
 		List<String> details = elUtil.getElementsText(breakUpDetailsXpath);
 		breakUpDetails.put("SubTotal", details.get(0));
@@ -81,6 +86,7 @@ public class CheckoutPage {
 		breakUpDetails.put("Total", details.get(2));
 	}
 	
+	@Step("Fetching the breakup details for UK")
 	private void getBreakupDetailsForUK() {
 		List<String> details = elUtil.getElementsText(breakUpDetailsXpath);
 		breakUpDetails.put("SubTotal", details.get(0));
@@ -90,6 +96,7 @@ public class CheckoutPage {
 		breakUpDetails.put("Total", details.get(4));
 	}
 	
+	@Step("Fetch the breakup details for the delivery country {0}")
 	public Map<String, String> getBreakUpDetails(String deliveryCountry) {
 //		getProductDetails();
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
@@ -105,15 +112,18 @@ public class CheckoutPage {
 		return elUtil.getElementText(orderPlacedMessage);
 	}
 	
+	@Step("Verify if the Flat Shiping Rate radio button is selected")
 	public boolean isFlatShippingRateRadioBtnSelected() {
 		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME, shippingMethodCollapsed, "class", "collapse in");
 		return elUtil.isElementSelected(shippingRateRadioBtn);
 	}
 	
+	@Step("Fetch the against the shipping rate radio button")
 	public String getFlatShippingRateRadioBtnText() {
 		return elUtil.getElementText(shippingRateRadioBtnText);
 	}
 	
+	@Step("Fetch the product details from the page and store in map")
 	public Map<String, String[]> getProductDetailsInMap() {
 		
 		By locator = elUtil.getBy("xpath", productDetailsXpath);

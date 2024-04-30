@@ -11,6 +11,8 @@ import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
+import io.qameta.allure.Step;
+
 public class AccountPage {
 
 	private WebDriver driver;
@@ -47,6 +49,7 @@ public class AccountPage {
 		return elUtil.waitForPageURLContains(TimeUtil.DEFAULT_MEDIUM_TIME, AppConstants.ACC_PAGE_URL_FRACTION);
 	}
 	
+	@Step("Search with {0}")
 	public SearchResultsPage doSearch(String searchKey) {
 		elUtil.sendKeysToElement(searchField, searchKey);
 		elUtil.clickElement(searchIcon);

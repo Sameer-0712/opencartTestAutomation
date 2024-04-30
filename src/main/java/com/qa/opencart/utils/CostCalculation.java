@@ -6,8 +6,11 @@ import java.util.Set;
 
 import com.qa.opencart.constants.AppConstants;
 
+import io.qameta.allure.Step;
+
 public class CostCalculation {
 
+	@Step("Calculate the total price for delivery country {0}, product {1} with quantity {2}")
 	public static String calculateTotalPrice(String deliveryCountry, String productPrice, int quantity) {
 		double price = Double.parseDouble(calculateTotalPriceWithoutTaxes(productPrice, quantity));
 		double ecoTax = 0.0;
@@ -21,17 +24,19 @@ public class CostCalculation {
 		return String.valueOf(totalPrice);
 	}
 
+	@Step("Calculating total price before taxes")
 	public static String calculateTotalPriceWithoutTaxes(String productPrice, int quantity) {
 		double price = StringUtil.removeSpecialCharacters(productPrice);
 		return String.valueOf(price * quantity);
 	}
 	
-
+	@Step("Calculate the eco tax for quantity {0}")
 	public static String calculateEcoTax(int quantity) {
 			double totalEcoTax = AppConstants.ECO_TAX * quantity + 2.00;
 			return String.valueOf(totalEcoTax);	
 	}
 
+	@Step("Calculate the VAT")
 	public static String calculateVAT(String productPrice, int quantity) {
 			double price = StringUtil.removeSpecialCharacters(productPrice);
 			double totalVAT = AppConstants.VAT * price * quantity + 1.00;

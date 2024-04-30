@@ -11,6 +11,8 @@ import com.qa.opencart.errors.AppErrors;
 import com.qa.opencart.pages.CheckoutPage;
 import com.qa.opencart.utils.ExcelUtil;
 
+import io.qameta.allure.Step;
+
 public class ProductInfoAssertions {
 
 	private SoftAssert softAssert;
@@ -21,19 +23,23 @@ public class ProductInfoAssertions {
 		this.checkoutPage = checkoutPage;
 	}
 
+	@Step("Fetch the model for the product: {0}")
 	private String getModelFromList(String productName) {
 		return checkoutPage.getProductDetailsInMap().get(productName)[0];
 //		return getProductDetailsUsingProductName(productName)[0];
 	}
-
+	
+	@Step("Fetch the quantity for the product: {0}")
 	private String getQuantityFromList(String productName) {
 		return checkoutPage.getProductDetailsInMap().get(productName)[1];
 	}
 
+	@Step("Fetch the unit price for the product: {0}")
 	private String getUnitPriceFromList(String productName) {
 		return checkoutPage.getProductDetailsInMap().get(productName)[2];
 	}
 
+	@Step("Verify the details for the product: {1}")
 	public void validateProductAssertions(String deliveryCountry, String productName, int quantity) {
 
 		switch (productName.trim()) {

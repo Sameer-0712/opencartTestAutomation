@@ -13,6 +13,8 @@ import com.qa.opencart.utils.CostCalculation;
 import com.qa.opencart.utils.ExcelUtil;
 import com.qa.opencart.utils.StringUtil;
 
+import io.qameta.allure.Step;
+
 public class ProductCalculationAssertions {
 
 	private SoftAssert softAssert;
@@ -23,10 +25,12 @@ public class ProductCalculationAssertions {
 		this.checkoutPage = checkoutPage;
 	}
 	
+	@Step("Fetching the actual toatl before taxes")
 	private String getTotalWithoutTaxesFromList(String productName) {
 		return checkoutPage.getProductDetailsInMap().get(productName)[3];
 	}
 
+	@Step("Verify the total before taxes for the delivery country {0}, product name {1} with quantity {2}")
 	public void validateTotalWithoutTaxes(String deliveryCountry, String productName, int quantity) {
 		String expectedTotalWithoutTaxes = null;
 		String actualTotalWithoutTaxes = null;
@@ -89,6 +93,7 @@ public class ProductCalculationAssertions {
 		}
 	}
 
+	@Step("Verify the subtotal for the delivery country {0}, product {1} with quantity {2}")
 	public void validateSubTotal(String deliveryCountry, String productName, int quantity) {
 		String expectedSubTotal = null;
 		String actualSubTotal = null;
@@ -127,6 +132,7 @@ public class ProductCalculationAssertions {
 		}
 	}
 
+	@Step("Verify the VAT for the delivery country {0}, product {1} with quantity {2}")
 	public void validateVAT(String deliveryCountry, String productName, int quantity) {
 		String expectedVAT = null;
 		String actualVAT = null;
@@ -179,6 +185,7 @@ public class ProductCalculationAssertions {
 		}
 	}
 
+	@Step("Verify the total for delivery country {0}, product {1} with quantity {2}")
 	public void validateTotal(String deliveryCountry, String productName, int quantity) {
 		String expectedTotal = null;
 		String actualTotal = null;

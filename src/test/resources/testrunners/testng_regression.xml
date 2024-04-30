@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Opencart" parallel="tests" verbose="5" thread-count="4">
+	
+	<listeners>
+		<listener class-name="com.qa.opencart.listeners.AllureReportListener"></listener>	
+	</listeners>
 
 	<test name="Login Page Tests">
 		<parameter name="browser" value="chrome" />
