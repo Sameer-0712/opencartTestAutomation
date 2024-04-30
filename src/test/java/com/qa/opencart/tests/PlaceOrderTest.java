@@ -16,6 +16,8 @@ import com.qa.opencart.utils.AppUtils;
 import com.qa.opencart.utils.ExcelUtil;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Step;
 
 public class PlaceOrderTest extends BaseTest {
@@ -28,6 +30,7 @@ public class PlaceOrderTest extends BaseTest {
 		Log.info("User logged in");
 	}
 
+	@Severity(SeverityLevel.CRITICAL)
 	@Description("Verify the end to end test by placing the order for an item")
 	@Step("Starting the execution. Search Key: {0), Product: {1}, Quantity: {2}, Billing Country: {3}, Delivery Country: {4}")
 	@Test(dataProvider = "getPlaceOrderData")

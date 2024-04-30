@@ -13,6 +13,9 @@ import com.qa.opencart.productassertions.ProductInfoAssertions;
 import com.qa.opencart.productassertions.StandardRateAssertions;
 import com.qa.opencart.utils.AppUtils;
 
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+
 public class PlaceMultipleItemsOrderTest extends BaseTest {
 
 	@BeforeClass
@@ -20,6 +23,7 @@ public class PlaceMultipleItemsOrderTest extends BaseTest {
 		accPage = loginPage.doLogin(prop.getProperty("username"), prop.getProperty("password"));
 	}
 
+	@Severity(SeverityLevel.CRITICAL)
 	@Test(dataProvider = "getBillingAndDeliveryCountries")
 	public void validatePlaceMultipleItemOrders(String billingCountry, String deliveryCountry) {
 
