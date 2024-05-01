@@ -45,7 +45,7 @@ public class CostCalculation {
 	
 	//****************Methods for multiple products//****************
 	
-	
+	@Step("Calculate the total price before taxes for product {0} with quantity {1}")
 	public static double calculateTotalPriceWithoutTaxesBasedOnProductNameQuantity(String productName, int quantity) {
 		String productPrice = AppConstants.getProductDetails(productName)[2];
 		double price = StringUtil.removeSpecialCharacters(productPrice);
@@ -66,6 +66,7 @@ public class CostCalculation {
 		return String.valueOf(totalPrice);
 	}
 	
+	@Step("Calculate the subtotal from the product-quantity map {0}")
 	public static String calculateSubTotalUsingProductNameQuantity(Map<String,String> hm) {
 		//Provide map of product name and quantity
 		int qty = 0;
@@ -87,6 +88,7 @@ public class CostCalculation {
 		return totalVAT;
 	}
 	
+	@Step("Calculate the total VAT from the product-quantity map {0}")
 	public static String calculateTotalVAT(Map<String,String> hm) {
 		//Provide map of product name and quantity
 		int qty = 0;
@@ -101,6 +103,7 @@ public class CostCalculation {
 		return String.valueOf(totalVAT + 1.0);
 	}
 	
+	@Step("Calculate the total from the product-quantity map {0}")
 	public static String calculateTotalForMultipleProducts(Map<String,String> hm, String deliveryCountry) {
 		
 		//Provide map of product name and quantity

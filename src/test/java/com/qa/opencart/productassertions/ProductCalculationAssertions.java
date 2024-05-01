@@ -226,6 +226,7 @@ public class ProductCalculationAssertions {
 	
 	//************************************Validation for multiple items************************************
 	
+		@Step("Verify the sub total for each product for country {0}")
 		public void validateSubTotalForEachProduct(String deliveryCountry) {
 			
 			Map<String, String[]> actualProductDetails = checkoutPage.getProductDetailsInMap();
@@ -246,6 +247,7 @@ public class ProductCalculationAssertions {
 					
 		}
 		
+		@Step("Verify the subtotal for delivery country {0}")
 		public void validateSubTotal(String deliveryCountry) {		
 			String subTotalString = checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal");
 			double actualSubTotal = StringUtil.removeSpecialCharacters(subTotalString);
@@ -256,6 +258,7 @@ public class ProductCalculationAssertions {
 			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_MULTIPLE_PRODUCTS_ERROR);
 		}
 		
+		@Step("Verify the total VAT for delivery country {0}")
 		public void validateTotalVAT(String deliveryCountry) {
 	
 			double actualTotalVAT = 0.0;
@@ -272,6 +275,7 @@ public class ProductCalculationAssertions {
 			
 		}
 		
+		@Step("Verify the total for all the products for delivery country {0}")
 		public void validateTotalForMultipleProducts(String deliveryCountry) {
 			
 			String expectedTotal = CostCalculation.calculateTotalForMultipleProducts(ExcelUtil.getProductQuantityMap(), deliveryCountry);

@@ -94,6 +94,7 @@ public class ProductInfoAssertions {
 
 	// **********************************Assertions for multiple products**********************************
 
+	@Step("Verify the details of all the products for {0}")
 	public void validateProductAssertions(String deliveryCountry) {
 
 		Map<String, String[]> actualProductDetails = checkoutPage.getProductDetailsInMap();

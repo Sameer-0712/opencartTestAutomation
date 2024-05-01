@@ -312,7 +312,7 @@ public class ElementUtil {
 		return wait.until(ExpectedConditions.alertIsPresent());
 	}
 
-	@Step("Wait for the page title to be {0}")
+	@Step("Wait for {0} seconds for the page title to be {1}")
 	public String waitForPageTitleIs(int timeOut, String title) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
 
@@ -379,7 +379,7 @@ public class ElementUtil {
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
 	}
 
-	@Step("Wait for {0} seconds for the element ,located by {1}, for attribute {2} to contain {3}")
+	@Step("Wait for {0} seconds for the element ,located \"{1}\", for attribute \"{2}\" to contain \"{3}\"")
 	public Boolean waitForElementAttributeToContain(int timeOut, By locator, String attribute, String value) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
 		return wait.until(ExpectedConditions.attributeContains(locator, attribute, value));

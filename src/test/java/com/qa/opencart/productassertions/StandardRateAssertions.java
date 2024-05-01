@@ -53,6 +53,7 @@ public class StandardRateAssertions {
 	
 	//***************************Assertions for Multiple Products**********************************
 	
+	@Step("Verify the total eco tax for the delivery country {0}")
 	public void validateTotalEcoTax(String deliveryCountry) {
 		String actualEcoTax = null;
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
