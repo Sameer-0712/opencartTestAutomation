@@ -15,7 +15,7 @@
 	Test -->
 
 	<test name="Account Page Tests">
-		<parameter name="browser" value="edge" />
+		<parameter name="browser" value="firefox" />
 		<classes>
 			<class name="com.qa.opencart.tests.AccountPageTest" />
 		</classes>
@@ -23,7 +23,7 @@
 	Test -->
 
 	<test name="Search Products Tests">
-		<parameter name="browser" value="edge" />
+		<parameter name="browser" value="firefox" />
 		<classes>
 			<class name="com.qa.opencart.tests.SearchProductsTest" />
 		</classes>
