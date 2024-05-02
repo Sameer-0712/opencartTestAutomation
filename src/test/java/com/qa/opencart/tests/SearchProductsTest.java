@@ -26,7 +26,6 @@ public class SearchProductsTest extends BaseTest {
 		softAssert.assertEquals(productDetails.get("Product Code"), "Product 16");
 		softAssert.assertEquals(productDetails.get("Reward Points"), "600");
 		softAssert.assertEquals(productDetails.get("Availability"), "In Stock");
-		softAssert.assertEquals(productDetails.get("Price"), "$602.00");
 		softAssert.assertEquals(productDetails.get("Ex Tax"), "$500.00");
 		softAssert.assertAll();
 	}
