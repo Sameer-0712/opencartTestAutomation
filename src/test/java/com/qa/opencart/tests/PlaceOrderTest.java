@@ -31,7 +31,7 @@ public class PlaceOrderTest extends BaseTest {
 	}
 
 	@Severity(SeverityLevel.CRITICAL)
-	@Description("Verify the end to end test by placing the order for an item")
+	@Description("End to end test to verify the order for single items")
 	@Step("Starting the execution. Search Key: {0), Product: {1}, Quantity: {2}, Billing Country: {3}, Delivery Country: {4}")
 	@Test(dataProvider = "getPlaceOrderData")
 	public void validatePlaceSingleItemOrders(String searchKey, String productName, String quantity,
@@ -42,14 +42,7 @@ public class PlaceOrderTest extends BaseTest {
 		appUtil.addProductToCart(searchKey, productName, quantity);
 		checkoutPage = appUtil.navigateToCheckOutPageAndFillDetails(billingCountry, deliveryCountry);
 
-		softAssert = new SoftAssert();
-		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
-
-		softAssert.assertTrue(checkoutPage.isFlatShippingRateRadioBtnSelected());
-
-		stdRateAssertion.validateShippingRateInDeliveryMethodStep(deliveryCountry);
-
-		checkoutPage.selectDeliverAndPaymentMethod();
+		assertShippingRateRadioButton(deliveryCountry);
 
 		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
 		productInfoAssertions.validateProductAssertions(deliveryCountry, productName, qty);
@@ -73,6 +66,63 @@ public class PlaceOrderTest extends BaseTest {
 	@DataProvider
 	public Object[][] getPlaceOrderData() {
 		return ExcelUtil.getTestData(AppConstants.PLACE_ORDER_SHEET_NAME);
+	}
+
+	// ***************************************************************************************************************************
+
+	@Severity(SeverityLevel.CRITICAL)
+	@Description("End to end test to verify the order for multiple items")
+	@Step("Starting the execution for billing country {0} and delivery country {1}")
+	@Test(dataProvider = "getBillingAndDeliveryCountries")
+	public void validatePlaceMultipleItemOrders(String billingCountry, String deliveryCountry) {
+
+		AppUtils appUtil = new AppUtils(accPage, searchResultsPage, productPage, cartPage, checkoutPage);
+		appUtil.addProductsToCart();
+
+		checkoutPage = appUtil.navigateToCheckOutPageAndFillDetails(billingCountry, deliveryCountry);
+
+		assertShippingRateRadioButton(deliveryCountry);
+
+		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
+		productInfoAssertions.validateProductAssertions(deliveryCountry);
+		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
+		productCalculationAssertions.validateSubTotalForEachProduct(deliveryCountry);
+		productCalculationAssertions.validateSubTotal(deliveryCountry);
+		stdRateAssertion.validateFlatShippingRate(deliveryCountry);
+		stdRateAssertion.validateTotalEcoTax(deliveryCountry);
+		productCalculationAssertions.validateTotalVAT(deliveryCountry);
+		productCalculationAssertions.validateTotalForMultipleProducts(deliveryCountry);
+		String actualMsg = checkoutPage.confirmOrder();
+
+		String expectedMsg = AppConstants.ORDER_PLACED_SUCCESS_MESSAGE;
+
+		softAssert.assertEquals(actualMsg, expectedMsg, AppErrors.ORDER_PLACED_SUCCESS_MESSAGE_ERROR);
+		softAssert.assertAll();
+	}
+
+	@DataProvider
+	public Object[][] getBillingAndDeliveryCountries() {
+
+		return new Object[][] { { "United Kingdom", "Japan" }, { "Japan", "United Kingdom" } };
+	}
+
+	// ***************************************************************************************************************************
+
+	/*
+	 * A private method to verify that the shipping radio button is selected on the
+	 * checkout page and to verify the text against the radio button which will be
+	 * based on the delivery country
+	 */
+
+	private void assertShippingRateRadioButton(String deliveryCountry) {
+		softAssert = new SoftAssert();
+		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
+
+		softAssert.assertTrue(checkoutPage.isFlatShippingRateRadioBtnSelected());
+
+		stdRateAssertion.validateShippingRateInDeliveryMethodStep(deliveryCountry);
+
+		checkoutPage.selectDeliverAndPaymentMethod();
 	}
 
 }
