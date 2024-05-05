@@ -21,7 +21,7 @@ import com.qa.opencart.productassertions.ProductInfoAssertions;
 import com.qa.opencart.productassertions.StandardRateAssertions;
 
 public class BaseTest {
-	
+
 	DriverFactory df;
 	protected Properties prop;
 	WebDriver driver;
@@ -35,20 +35,21 @@ public class BaseTest {
 	protected ProductInfoAssertions productInfoAssertions;
 	protected ProductCalculationAssertions productCalculationAssertions;
 	protected StandardRateAssertions stdRateAssertion;
-	
-	@Parameters("browser")
+
+	@Parameters({ "browser", "browserversion" })
 	@BeforeTest
-	public void setup(String browserName) {
+	public void setup(String browserName, String browserVersion) {
 		df = new DriverFactory();
 		prop = df.initProp();
-		if(!(browserName == null)) {
-			Log.info("Tests running on browser: "+browserName);
+		if (!(browserName == null)) {
+			Log.info("Tests running on browser: " + browserName);
 			prop.setProperty("browser", browserName);
+			prop.setProperty("browserversion", browserVersion);
 		}
 		driver = df.initDriver(prop);
 		loginPage = new LoginPage(driver);
 	}
-	
+
 	@AfterTest
 	public void tearDown() {
 		driver.quit();

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Opencart" parallel="tests" verbose="5" thread-count="4">
-	
+
 	<listeners>
-		<listener class-name="com.qa.opencart.listeners.AllureReportListener"></listener>	
+		<listener class-name="com.qa.opencart.listeners.AllureReportListener"></listener>
 	</listeners>
 
 	<test name="Login Page Tests">
 		<parameter name="browser" value="chrome" />
+		<parameter name="browserversion" value="90.0" />
+
 		<classes>
 			<class name="com.qa.opencart.tests.LoginPageTest" />
 		</classes>
@@ -16,6 +18,8 @@
 
 	<test name="Account Page Tests">
 		<parameter name="browser" value="firefox" />
+		<parameter name="browserversion" value="125.0" />
+
 		<classes>
 			<class name="com.qa.opencart.tests.AccountPageTest" />
 		</classes>
@@ -24,6 +28,8 @@
 
 	<test name="Search Products Tests">
 		<parameter name="browser" value="firefox" />
+		<parameter name="browserversion" value="118.0" />
+
 		<classes>
 			<class name="com.qa.opencart.tests.SearchProductsTest" />
 		</classes>
@@ -32,6 +38,8 @@
 
 	<test name="Place Order Tests">
 		<parameter name="browser" value="chrome" />
+		<parameter name="browserversion" value="124.0" />
+
 		<classes>
 			<class name="com.qa.opencart.tests.PlaceOrderTest" />
 		</classes>
