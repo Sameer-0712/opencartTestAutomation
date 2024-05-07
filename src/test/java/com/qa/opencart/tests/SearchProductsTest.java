@@ -18,7 +18,7 @@ public class SearchProductsTest extends BaseTest {
 	
 	@Test
 	public void productInfoTest() {
-		searchResultsPage =  accPage.doSearch("mac");
+		searchResultsPage =  page.doSearch("mac");
 		productPage = searchResultsPage.navigateToProductPage("MacBook");
 		softAssert = new SoftAssert();
 		Map<String,String> productDetails = productPage.getProductInfo();

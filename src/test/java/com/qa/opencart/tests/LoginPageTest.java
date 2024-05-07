@@ -1,6 +1,8 @@
 package com.qa.opencart.tests;
 
+import com.qa.opencart.pages.LoginPage;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.qa.opencart.base.BaseTest;

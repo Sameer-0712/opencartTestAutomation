@@ -2,6 +2,7 @@ package com.qa.opencart.base;
 
 import java.util.Properties;
 
+import com.qa.opencart.pages.*;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -10,12 +11,6 @@ import org.testng.asserts.SoftAssert;
 
 import com.qa.opencart.factory.DriverFactory;
 import com.qa.opencart.logger.Log;
-import com.qa.opencart.pages.AccountPage;
-import com.qa.opencart.pages.CartPage;
-import com.qa.opencart.pages.CheckoutPage;
-import com.qa.opencart.pages.LoginPage;
-import com.qa.opencart.pages.ProductPage;
-import com.qa.opencart.pages.SearchResultsPage;
 import com.qa.opencart.productassertions.ProductCalculationAssertions;
 import com.qa.opencart.productassertions.ProductInfoAssertions;
 import com.qa.opencart.productassertions.StandardRateAssertions;
@@ -26,6 +21,7 @@ public class BaseTest {
 	protected Properties prop;
 	WebDriver driver;
 	protected LoginPage loginPage;
+	protected Page page;
 	protected AccountPage accPage;
 	protected SearchResultsPage searchResultsPage;
 	protected ProductPage productPage;
@@ -47,11 +43,25 @@ public class BaseTest {
 		}
 		driver = df.initDriver(prop);
 		loginPage = new LoginPage(driver);
+		page = new Page(driver);
 	}
 	
 	@AfterTest
 	public void tearDown() {
 		driver.quit();
+	}
+
+	/*
+	 * A method to verify that the shipping radio button is selected on the
+	 * checkout page. It will also verify that the text against the radio button is
+	 * based on the delivery country selected.
+	 */
+	protected void assertShippingRateRadioButton(String deliveryCountry) {
+		softAssert = new SoftAssert();
+		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
+		softAssert.assertTrue(checkoutPage.isFlatShippingRateRadioBtnSelected());
+		stdRateAssertion.validateShippingRateInDeliveryMethodStep(deliveryCountry);
+		checkoutPage.selectDeliverAndPaymentMethod();
 	}
 
 }

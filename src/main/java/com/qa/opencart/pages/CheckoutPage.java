@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.qa.opencart.utils.CSVUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -19,12 +20,16 @@ public class CheckoutPage {
 	
 	private ElementUtil elUtil;
 	private Map<String,String> breakUpDetails = new LinkedHashMap<String, String>();
+	String[] billingAddress = CSVUtils.getBillingAddress();
+	String[] deliveryAddress = CSVUtils.getDeliveryAddress();
 
 	public CheckoutPage(WebDriver driver) {
 		elUtil = new ElementUtil(driver);
 	}
 	
 	private By billingDetailsContinueBtn = By.cssSelector("input#button-payment-address");
+	private By billingDetailsContinueBtnForGuest = By.id("button-guest");
+	private By deliveryDetailsContinueBtnForGuest = By.id("button-guest-shipping");
 	private By shippingDetailsContinueBtn = By.cssSelector("input#button-shipping-address");
 	private By shippingMethodContinueBtn = By.cssSelector("input#button-shipping-method");
 	private By paymentMethodContinueBtn = By.cssSelector("input#button-payment-method");
@@ -44,6 +49,36 @@ public class CheckoutPage {
 	private By paymentMethodCollapsed = By.id("collapse-payment-method");
 	private By confirmOrderCollapsed = By.id("collapse-checkout-confirm");
 	private By continueButton = By.xpath("//a[normalize-space()='Continue']");
+	private By guestRadioBtn = By.xpath("//input[@value='guest']");
+	private By checkoutOptionsContinueBtn = By.cssSelector("input#button-account");
+	private By checkoutOptionsCollapsed = By.id("collapse-checkout-option");
+
+	private By billingDetailsCollapsed = By.id("collapse-payment-address");
+
+
+	private By billingDetailsFirstName = By.id("input-payment-firstname");
+	private By billingDetailsLastName = By.id("input-payment-lastname");
+	private By billingDetailsEmail = By.id("input-payment-email");
+	private By billingDetailstelephone = By.id("input-payment-telephone");
+	private By billingDetailsCompany = By.id("input-payment-company");
+	private By billingDetailsAddress1 = By.id("input-payment-address-1");
+	private By billingDetailsAddress2 = By.id("input-payment-address-2");
+	private By billingDetailsCity = By.id("input-payment-city");
+	private By billingDetailsPostCode = By.id("input-payment-postcode");
+	private By billingDetailsCountryDropdown = By.id("input-payment-country");
+	private By billingDetailsRegionDropdown = By.id("input-payment-zone");
+	private By deliveryAndBillingAddressSameCheckBox = By.name("shipping_address");
+
+	private By deliveryDetailsFirstName = By.id("input-shipping-firstname");
+	private By deliveryDetailsLastName = By.id("input-shipping-lastname");
+	private By deliveryDetailsCompany = By.id("input-shipping-company");
+	private By deliveryDetailsAddress1 = By.id("input-shipping-address-1");
+	private By deliveryDetailsAddress2 = By.id("input-shipping-address-2");
+	private By deliveryDetailsCity = By.id("input-shipping-city");
+	private By deliveryDetailsPostCode = By.id("input-shipping-postcode");
+	private By deliveryDetailsCountry = By.id("input-shipping-country");
+	private By deliveryDetailsRegion = By.id("input-shipping-zone");
+
 
 	public void selectBillingAndDeliveryDetails(String billingCountry, String deliveryCountry) {
 		
@@ -158,6 +193,73 @@ public class CheckoutPage {
 	public List<String> getProducts() {
 		String xpath = productRow+"//a";
 		return elUtil.getElementsText(elUtil.getBy("xpath", xpath));
+	}
+
+	public void selectGuestCheckoutRadioButtonAndContinue(){
+
+		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME,checkoutOptionsCollapsed,"class","collapse in");
+		elUtil.clickElement(guestRadioBtn);
+		elUtil.clickElement(checkoutOptionsContinueBtn);
+
+	}
+
+	public void fillBillingAndDeliveryDetails(String isBillingAndDeliveryAddressSame){
+
+		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME,billingDetailsCollapsed,"class","collapse in");
+		elUtil.sendKeysToElement(billingDetailsFirstName,billingAddress[0]);
+		elUtil.sendKeysToElement(billingDetailsLastName,billingAddress[1]);
+		elUtil.sendKeysToElement(billingDetailsEmail,billingAddress[2]);
+		elUtil.sendKeysToElement(billingDetailstelephone,billingAddress[3]);
+//		elUtil.sendKeysToElement(billingDetailsCompany,"");
+		elUtil.sendKeysToElement(billingDetailsAddress1,billingAddress[4]);
+//		elUtil.sendKeysToElement(billingDetailsAddress2,"");
+		elUtil.sendKeysToElement(billingDetailsCity,billingAddress[5]);
+		elUtil.sendKeysToElement(billingDetailsPostCode,billingAddress[6]);
+
+		elUtil.doSelectByVisibleText(billingDetailsCountryDropdown,billingAddress[8]);
+		TimeUtil.shortTime();
+		elUtil.doSelectByVisibleText(billingDetailsRegionDropdown,billingAddress[7]);
+
+		if(Boolean.parseBoolean(isBillingAndDeliveryAddressSame)){
+			if(!elUtil.isElementSelected(deliveryAndBillingAddressSameCheckBox)){
+				elUtil.clickElement(deliveryAndBillingAddressSameCheckBox);
+			}
+			elUtil.clickElement(billingDetailsContinueBtnForGuest);
+		}else{
+			if(elUtil.isElementSelected(deliveryAndBillingAddressSameCheckBox)){
+				elUtil.clickElement(deliveryAndBillingAddressSameCheckBox);
+			}
+			elUtil.clickElement(billingDetailsContinueBtnForGuest);
+			fillDeliveryDetails();
+		}
+
+	}
+
+	private void fillDeliveryDetails(){
+
+		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME, shippingAddressCollapsed, "class", "collapse in");
+		elUtil.sendKeysToElement(deliveryDetailsFirstName,deliveryAddress[0]);
+		elUtil.sendKeysToElement(deliveryDetailsLastName,deliveryAddress[1]);
+//		elUtil.sendKeysToElement(deliveryDetailsCompany,"");
+		elUtil.sendKeysToElement(deliveryDetailsAddress1,deliveryAddress[2]);
+//		elUtil.sendKeysToElement(deliveryDetailsAddress2,"");
+		elUtil.sendKeysToElement(deliveryDetailsCity,deliveryAddress[3]);
+		elUtil.sendKeysToElement(deliveryDetailsPostCode,deliveryAddress[4]);
+		elUtil.doSelectByVisibleText(deliveryDetailsCountry,deliveryAddress[5]);
+		elUtil.doSelectByVisibleText(deliveryDetailsRegion,deliveryAddress[6]);
+		elUtil.clickElement(deliveryDetailsContinueBtnForGuest);
+
+	}
+
+	public String getDeliveryCountry(String isBillingAndDeliveryAddressSame){
+
+		String deliveryCountry;
+		if(Boolean.parseBoolean(isBillingAndDeliveryAddressSame)){
+			deliveryCountry = billingAddress[8];
+		}else{
+			deliveryCountry = deliveryAddress[5];
+		}
+		return deliveryCountry;
 	}
 
 }

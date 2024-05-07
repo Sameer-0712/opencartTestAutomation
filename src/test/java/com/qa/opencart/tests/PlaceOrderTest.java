@@ -3,7 +3,6 @@ package com.qa.opencart.tests;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 import com.qa.opencart.base.BaseTest;
 import com.qa.opencart.constants.AppConstants;
@@ -11,7 +10,6 @@ import com.qa.opencart.errors.AppErrors;
 import com.qa.opencart.logger.Log;
 import com.qa.opencart.productassertions.ProductCalculationAssertions;
 import com.qa.opencart.productassertions.ProductInfoAssertions;
-import com.qa.opencart.productassertions.StandardRateAssertions;
 import com.qa.opencart.utils.AppUtils;
 import com.qa.opencart.utils.ExcelUtil;
 
@@ -36,7 +34,7 @@ public class PlaceOrderTest extends BaseTest {
 	@Test(dataProvider = "getPlaceOrderData")
 	public void validatePlaceSingleItemOrders(String searchKey, String productName, String quantity,
 			String billingCountry, String deliveryCountry) {
-		AppUtils appUtil = new AppUtils(accPage, searchResultsPage, productPage, cartPage, checkoutPage);
+		AppUtils appUtil = new AppUtils(page, searchResultsPage, productPage, cartPage, checkoutPage);
 		int qty = Integer.parseInt(quantity);
 
 		appUtil.addProductToCart(searchKey, productName, quantity);
@@ -76,7 +74,7 @@ public class PlaceOrderTest extends BaseTest {
 	@Test(dataProvider = "getBillingAndDeliveryCountries")
 	public void validatePlaceMultipleItemOrders(String billingCountry, String deliveryCountry) {
 
-		AppUtils appUtil = new AppUtils(accPage, searchResultsPage, productPage, cartPage, checkoutPage);
+		AppUtils appUtil = new AppUtils(page, searchResultsPage, productPage, cartPage, checkoutPage);
 		appUtil.addProductsToCart();
 
 		checkoutPage = appUtil.navigateToCheckOutPageAndFillDetails(billingCountry, deliveryCountry);
@@ -106,23 +104,5 @@ public class PlaceOrderTest extends BaseTest {
 		return new Object[][] { { "United Kingdom", "Japan" }, { "Japan", "United Kingdom" } };
 	}
 
-	// ***************************************************************************************************************************
-
-	/*
-	 * A private method to verify that the shipping radio button is selected on the
-	 * checkout page and to verify the text against the radio button which will be
-	 * based on the delivery country
-	 */
-
-	private void assertShippingRateRadioButton(String deliveryCountry) {
-		softAssert = new SoftAssert();
-		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
-
-		softAssert.assertTrue(checkoutPage.isFlatShippingRateRadioBtnSelected());
-
-		stdRateAssertion.validateShippingRateInDeliveryMethodStep(deliveryCountry);
-
-		checkoutPage.selectDeliverAndPaymentMethod();
-	}
 
 }

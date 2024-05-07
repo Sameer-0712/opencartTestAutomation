@@ -25,8 +25,7 @@ public class AccountPage {
 
 	private By logoutLink = By.linkText("Logout");
 	private By headers = By.cssSelector("div#content h2");
-	private By searchField = By.name("search");
-	private By searchIcon = By.cssSelector(".input-group-btn");
+
 
 	public List<String> getHeaders() {
 		List<WebElement> headersElements = elUtil.getElements(headers);
@@ -47,13 +46,6 @@ public class AccountPage {
 
 	public String getAccountPageURL() {
 		return elUtil.waitForPageURLContains(TimeUtil.DEFAULT_MEDIUM_TIME, AppConstants.ACC_PAGE_URL_FRACTION);
-	}
-
-	@Step("Search with {0}")
-	public SearchResultsPage doSearch(String searchKey) {
-		elUtil.sendKeysToElement(searchField, searchKey);
-		elUtil.clickElement(searchIcon);
-		return new SearchResultsPage(driver);
 	}
 
 }

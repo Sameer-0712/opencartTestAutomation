@@ -22,6 +22,7 @@ public class AppConstants {
 
 	public static final String PLACE_ORDER_SHEET_NAME = "placeOrder";
 	public static final String PLACE_MULTIPLE_ITEMS_ORDER_SHEET_NAME = "placeMultipleItems";
+	public static final String PLACE_ORDER_GUEST_SHEET_NAME = "placeOrderGuest";
 
 	// *****************************Application Success Messages*****************************
 

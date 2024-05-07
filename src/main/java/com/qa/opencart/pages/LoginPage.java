@@ -13,7 +13,7 @@ public class LoginPage {
 	private ElementUtil elUtil;
 	
 	public LoginPage(WebDriver driver) {
-		this.driver = driver;
+        this.driver = driver;
 		elUtil = new ElementUtil(driver);
 	}
 	
