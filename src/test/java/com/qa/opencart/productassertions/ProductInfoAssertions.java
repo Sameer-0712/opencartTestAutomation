@@ -26,7 +26,6 @@ public class ProductInfoAssertions {
 	@Step("Fetch the model for the product: {0}")
 	private String getModelFromList(String productName) {
 		return checkoutPage.getProductDetailsInMap().get(productName)[0];
-//		return getProductDetailsUsingProductName(productName)[0];
 	}
 	
 	@Step("Fetch the quantity for the product: {0}")

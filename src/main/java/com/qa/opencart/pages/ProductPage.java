@@ -9,22 +9,18 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
 import io.qameta.allure.Step;
 
-public class ProductPage {
-	
-	private WebDriver driver;
-	private ElementUtil elUtil;
+public class ProductPage extends Page{
+
 	private List<WebElement> productInfoElements;
 	private List<String> productInfo = new ArrayList<String>();;
 	private Map<String,String> productInfoMap = new HashMap<String, String>();
 
 	public ProductPage(WebDriver driver) {
-		this.driver = driver;
-		elUtil = new ElementUtil(driver);
+        super(driver);
 	}
 	
 	private By metaData = By.cssSelector("#content ul.list-unstyled li");

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Opencart" parallel="tests" verbose="5" thread-count="4">
+<suite name="Opencart" parallel="tests" verbose="5" thread-count="5">
 	
 	<listeners>
 		<listener class-name="com.qa.opencart.listeners.AllureReportListener"></listener>	
@@ -37,6 +37,13 @@
 		</classes>
 	</test> <!--
 	Test -->
+
+	<test name="Place Order Tests For Guest">
+		<parameter name="browser" value="chrome" />
+		<classes>
+			<class name="com.qa.opencart.tests.GuestPlaceOrderTest" />
+		</classes>
+	</test>
 
 </suite> <!--
 Suite -->
