@@ -2,6 +2,7 @@ package com.qa.opencart.tests;
 
 import java.util.Map;
 
+import com.qa.opencart.pages.LoginPage;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -13,6 +14,7 @@ public class SearchProductsTest extends BaseTest {
 	
 	@BeforeClass
 	public void loginToApp() {
+		loginPage = new LoginPage(driver);
 		accPage = loginPage.doLogin(prop.getProperty("username"), prop.getProperty("password"));
 	}
 	

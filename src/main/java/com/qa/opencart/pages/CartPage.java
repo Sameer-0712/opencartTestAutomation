@@ -7,19 +7,15 @@ import java.util.Map;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
-public class CartPage {
-	
-	private WebDriver driver;
-	private ElementUtil elUtil;
+public class CartPage extends Page {
+
 	private Map<String,String> prodDetails = new HashMap<String,String>();
 	private Map<String,String> costBreakUp = new HashMap<String,String>();
 
 	public CartPage(WebDriver driver) {
-		this.driver = driver;
-		elUtil = new ElementUtil(driver);
+        super(driver);
 	}
 	
 	private By countryDropdown = By.id("input-country");

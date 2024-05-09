@@ -11,20 +11,18 @@ import org.openqa.selenium.WebDriver;
 
 import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.logger.Log;
-import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
 import io.qameta.allure.Step;
 
-public class CheckoutPage {
-	
-	private ElementUtil elUtil;
+public class CheckoutPage extends Page {
+
 	private Map<String,String> breakUpDetails = new LinkedHashMap<String, String>();
 	String[] billingAddress = CSVUtils.getBillingAddress();
 	String[] deliveryAddress = CSVUtils.getDeliveryAddress();
 
 	public CheckoutPage(WebDriver driver) {
-		elUtil = new ElementUtil(driver);
+        super(driver);
 	}
 	
 	private By billingDetailsContinueBtn = By.cssSelector("input#button-payment-address");
@@ -133,7 +131,6 @@ public class CheckoutPage {
 	
 	@Step("Fetch the breakup details for the delivery country {0}")
 	public Map<String, String> getBreakUpDetails(String deliveryCountry) {
-//		getProductDetails();
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
 			getBreakupDetailsForUK();
 		}else {
@@ -210,9 +207,7 @@ public class CheckoutPage {
 		elUtil.sendKeysToElement(billingDetailsLastName,billingAddress[1]);
 		elUtil.sendKeysToElement(billingDetailsEmail,billingAddress[2]);
 		elUtil.sendKeysToElement(billingDetailstelephone,billingAddress[3]);
-//		elUtil.sendKeysToElement(billingDetailsCompany,"");
 		elUtil.sendKeysToElement(billingDetailsAddress1,billingAddress[4]);
-//		elUtil.sendKeysToElement(billingDetailsAddress2,"");
 		elUtil.sendKeysToElement(billingDetailsCity,billingAddress[5]);
 		elUtil.sendKeysToElement(billingDetailsPostCode,billingAddress[6]);
 
@@ -240,9 +235,7 @@ public class CheckoutPage {
 		elUtil.waitForElementAttributeToContain(TimeUtil.DEFAULT_MEDIUM_TIME, shippingAddressCollapsed, "class", "collapse in");
 		elUtil.sendKeysToElement(deliveryDetailsFirstName,deliveryAddress[0]);
 		elUtil.sendKeysToElement(deliveryDetailsLastName,deliveryAddress[1]);
-//		elUtil.sendKeysToElement(deliveryDetailsCompany,"");
 		elUtil.sendKeysToElement(deliveryDetailsAddress1,deliveryAddress[2]);
-//		elUtil.sendKeysToElement(deliveryDetailsAddress2,"");
 		elUtil.sendKeysToElement(deliveryDetailsCity,deliveryAddress[3]);
 		elUtil.sendKeysToElement(deliveryDetailsPostCode,deliveryAddress[4]);
 		elUtil.doSelectByVisibleText(deliveryDetailsCountry,deliveryAddress[5]);

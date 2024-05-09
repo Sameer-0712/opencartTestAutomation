@@ -9,7 +9,11 @@ import com.qa.opencart.base.BaseTest;
 
 public class LoginPageTest extends BaseTest{
 
-	
+	@BeforeClass
+	public void initializeLoginPage(){
+		loginPage = new LoginPage(driver);
+	}
+
 	@Test
 	public void loginPageTitleTest() {
 		Assert.assertEquals(loginPage.getLoginPageTitle(), "Account Login");	
@@ -25,5 +29,5 @@ public class LoginPageTest extends BaseTest{
 		accPage = loginPage.doLogin(prop.getProperty("username"), prop.getProperty("password"));
 		Assert.assertEquals(accPage.getAccountPageTitle(), "My Account");
 	}
-		
+
 }

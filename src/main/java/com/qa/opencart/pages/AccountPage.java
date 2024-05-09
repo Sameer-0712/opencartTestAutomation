@@ -8,19 +8,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.qa.opencart.constants.AppConstants;
-import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
-import io.qameta.allure.Step;
-
-public class AccountPage {
-
-	private WebDriver driver;
-	private ElementUtil elUtil;
+public class AccountPage extends Page {
 
 	public AccountPage(WebDriver driver) {
-		this.driver = driver;
-		elUtil = new ElementUtil(driver);
+		super(driver);
 	}
 
 	private By logoutLink = By.linkText("Logout");

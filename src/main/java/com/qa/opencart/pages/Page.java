@@ -7,8 +7,8 @@ import org.openqa.selenium.WebDriver;
 
 public class Page {
 
-    private WebDriver driver;
-    private ElementUtil elUtil;
+    protected WebDriver driver;
+    protected ElementUtil elUtil;
 
     public Page(WebDriver driver){
         this.driver = driver;
