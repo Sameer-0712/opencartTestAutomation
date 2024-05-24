@@ -1,5 +1,6 @@
 package com.qa.opencart.tests;
 
+import com.qa.opencart.pages.LoginPage;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -11,6 +12,7 @@ public class AccountPageTest extends BaseTest {
 	
 	@BeforeClass
 	public void loginToApp() {
+		loginPage = new LoginPage(driver);
 		accPage = loginPage.doLogin(prop.getProperty("username"), prop.getProperty("password"));
 	}
 	

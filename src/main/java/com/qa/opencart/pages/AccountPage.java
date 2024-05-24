@@ -8,25 +8,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.qa.opencart.constants.AppConstants;
-import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
-import io.qameta.allure.Step;
-
-public class AccountPage {
-
-	private WebDriver driver;
-	private ElementUtil elUtil;
+public class AccountPage extends Page {
 
 	public AccountPage(WebDriver driver) {
-		this.driver = driver;
-		elUtil = new ElementUtil(driver);
+		super(driver);
 	}
 
 	private By logoutLink = By.linkText("Logout");
 	private By headers = By.cssSelector("div#content h2");
-	private By searchField = By.name("search");
-	private By searchIcon = By.cssSelector(".input-group-btn");
+
 
 	public List<String> getHeaders() {
 		List<WebElement> headersElements = elUtil.getElements(headers);
@@ -47,13 +39,6 @@ public class AccountPage {
 
 	public String getAccountPageURL() {
 		return elUtil.waitForPageURLContains(TimeUtil.DEFAULT_MEDIUM_TIME, AppConstants.ACC_PAGE_URL_FRACTION);
-	}
-
-	@Step("Search with {0}")
-	public SearchResultsPage doSearch(String searchKey) {
-		elUtil.sendKeysToElement(searchField, searchKey);
-		elUtil.clickElement(searchIcon);
-		return new SearchResultsPage(driver);
 	}
 
 }

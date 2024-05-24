@@ -7,14 +7,10 @@ import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.utils.ElementUtil;
 import com.qa.opencart.utils.TimeUtil;
 
-public class LoginPage {
-	
-	private WebDriver driver;
-	private ElementUtil elUtil;
+public class LoginPage extends Page{
 	
 	public LoginPage(WebDriver driver) {
-		this.driver = driver;
-		elUtil = new ElementUtil(driver);
+        super(driver);
 	}
 	
 	private By emailId = By.id("input-email");

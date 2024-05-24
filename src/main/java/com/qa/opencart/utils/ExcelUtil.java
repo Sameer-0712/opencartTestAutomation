@@ -54,7 +54,7 @@ public class ExcelUtil {
 			ip = new FileInputStream(TEST_DATA_SHEET_PATH);
 			book = WorkbookFactory.create(ip);
 			sheet = book.getSheet(sheetName);
-			colValues = new String[sheet.getRow(0).getLastCellNum()];
+			colValues = new String[sheet.getRow(0).getLastCellNum()-1];
 			for (int i = 0; i < sheet.getRow(0).getLastCellNum(); i++) {
 				if (sheet.getRow(0).getCell(i).toString().equals(columnName)) {
 					for (int j = 0; j < sheet.getLastRowNum(); j++) {
@@ -86,10 +86,6 @@ public class ExcelUtil {
 			map.put((String) data[i][1], (String) data[i][2]);
 		}
 		return map;
-	}
-
-	public static void main(String[] args) {
-		System.out.println(getProductQuantityMap());
 	}
 
 }

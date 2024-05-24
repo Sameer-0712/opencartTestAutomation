@@ -22,10 +22,12 @@ public class AppConstants {
 
 	public static final String PLACE_ORDER_SHEET_NAME = "placeOrder";
 	public static final String PLACE_MULTIPLE_ITEMS_ORDER_SHEET_NAME = "placeMultipleItems";
+	public static final String PLACE_ORDER_GUEST_SHEET_NAME = "placeOrderGuest";
 
 	// *****************************Application Success Messages*****************************
 
 	public static final String ORDER_PLACED_SUCCESS_MESSAGE = "Your order has been placed!";
+	public static final String SHIPPING_RATE_APPLIED_SUCCESS = "Success: Your shipping estimate has been applied!";
 	
 	// *****************************Special Country*****************************
 
