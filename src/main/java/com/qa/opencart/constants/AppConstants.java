@@ -27,6 +27,7 @@ public class AppConstants {
 	// *****************************Application Success Messages*****************************
 
 	public static final String ORDER_PLACED_SUCCESS_MESSAGE = "Your order has been placed!";
+	public static final String SHIPPING_RATE_APPLIED_SUCCESS = "Success: Your shipping estimate has been applied!";
 	
 	// *****************************Special Country*****************************
 

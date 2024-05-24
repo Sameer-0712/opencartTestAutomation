@@ -14,6 +14,8 @@ public class CSVUtils {
 
     private static List<String[]> rows;
 
+    private static List<String[]> dataList;
+
     private static List<String[]> csvData(String csvName) {
         String csvFile = CSV_PATH + csvName + ".csv";
 
@@ -43,16 +45,16 @@ public class CSVUtils {
         return rows.get(1);
     }
 
-
-    public static String getBillingCountry(){
-        return getBillingAddress()[8];
+    public static String[] getCountryRegionPinData(String country){
+        dataList = csvData("CountryRegionPin");
+        String[] countryData = null;
+        for(String[] data:dataList){
+            if(data[0].equals(country)){
+                countryData = data;
+                break;
+            }
+        }
+        return countryData;
     }
 
-//    public static String getDeliveryCountry(){
-//        if(isBillingAndDeliveryAddressSame()){
-//           return getBillingAddress()[8];
-//        }else{
-//            return getDeliveryAddress()[5];
-//        }
-//    }
 }

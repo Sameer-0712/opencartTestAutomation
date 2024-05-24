@@ -54,19 +54,16 @@ public class AppUtils {
 
 	public void addProductsToCart() {
 		Object[][] productsData = ExcelUtil.getTestData(AppConstants.PLACE_MULTIPLE_ITEMS_ORDER_SHEET_NAME);
-
-		int countOfProducts = productsData.length;
 		String searchKey = null;
 		String productName = null;
 		String quantity = null;
 
-		for (int i = 0; i < countOfProducts; i++) {
-			searchKey = (String) productsData[i][0];
-			productName = (String) productsData[i][1];
-			quantity = (String) productsData[i][2];
-			addProductToCart(searchKey, productName, quantity);
-		}
-
+        for (Object[] productsDatum : productsData) {
+            searchKey = (String) productsDatum[0];
+            productName = (String) productsDatum[1];
+            quantity = (String) productsDatum[2];
+            addProductToCart(searchKey, productName, quantity);
+        }
 	}
 
 }
