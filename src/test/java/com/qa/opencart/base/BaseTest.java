@@ -15,7 +15,7 @@ import com.qa.opencart.factory.DriverFactory;
 import com.qa.opencart.logger.Log;
 
 public class BaseTest {
-	
+
 	DriverFactory df;
 	protected Properties prop;
 	protected WebDriver driver;
@@ -33,20 +33,22 @@ public class BaseTest {
 	protected ShippingRateRadioButtonAssertions shippingRateRadioButtonAssertions;
 	protected ProductCalculationAssertionsOnCartPage productCalculationAssertionsOnCartPage;
 	protected AppUtils appUtil;
-	
-	@Parameters("browser")
+
+
+	@Parameters({ "browser", "browserversion" })
 	@BeforeTest
-	public void setup(String browserName) {
+	public void setup(String browserName, String browserVersion) {
 		df = new DriverFactory();
 		prop = df.initProp();
-		if(!(browserName == null)) {
-			Log.info("Tests running on browser: "+browserName);
+		if (!(browserName == null)) {
+			Log.info("Tests running on browser: " + browserName);
 			prop.setProperty("browser", browserName);
+			prop.setProperty("browserversion", browserVersion);
 		}
 		driver = df.initDriver(prop);
 		page = new Page(driver);
 	}
-	
+
 	@AfterTest
 	public void tearDown() {
 		driver.quit();
