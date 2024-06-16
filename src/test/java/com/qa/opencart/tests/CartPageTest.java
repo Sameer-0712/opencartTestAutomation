@@ -10,10 +10,13 @@ import com.qa.opencart.utils.CSVUtils;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CartPageTest extends BaseTest {
 
-    private String productName;
-    private String quantity;
+    private Map<String,String> productNamesQuantity;
+    private int quantity;
 
     @BeforeClass
     public void loginToApp() {
@@ -28,19 +31,20 @@ public class CartPageTest extends BaseTest {
 
     @BeforeMethod()
     public void addToCart(){
-      Object[][] data = new Object[][] {{"mac","MacBook Pro","1"}};
+      Object[][] data = new Object[][] {{"ipod","iPod Classic","3"},{"sony","Sony VAIO","2"},{"hp","HP LP3065","7"}};
+      productNamesQuantity = new HashMap<String,String>();
+      int totalQuantity = 0;
       for(Object[] d:data){
           String searchKey = (String) d[0];
-          productName = (String) d[1];
-          quantity = (String) d[2];
-          appUtil.addProductToCart(searchKey,productName,quantity);
+          productNamesQuantity.put((String) d[1],(String) d[2]);
+          appUtil.addProductToCart(searchKey,(String) d[1],String.valueOf(d[2]));
+          totalQuantity = totalQuantity + Integer.parseInt(String.valueOf(d[2]));
       }
+      quantity = totalQuantity;
     }
 
     @Test(dataProvider = "getData")
     public void verifyFlatShippingRateIsAppliedOnTheBasisOfDeliveryCountry(String deliveryCountry){
-
-        int qty = Integer.parseInt(quantity);
 
         cartPage = productPage.navigateToCart();
         productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
@@ -48,11 +52,11 @@ public class CartPageTest extends BaseTest {
         String successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
         softAssert.assertEquals(successMsg,AppConstants.SHIPPING_RATE_APPLIED_SUCCESS);
 
-        productCalculationAssertionsOnCartPage.validateSubTotal(deliveryCountry,productName,qty);
+        productCalculationAssertionsOnCartPage.validateSubTotal(deliveryCountry,productNamesQuantity);
         productCalculationAssertionsOnCartPage.validateFlatShippingRate(deliveryCountry);
-        productCalculationAssertionsOnCartPage.validateEcoTax(deliveryCountry,qty);
-        productCalculationAssertionsOnCartPage.validateVAT(deliveryCountry,productName,qty);
-        productCalculationAssertionsOnCartPage.validateTotal(deliveryCountry,productName,qty);
+        productCalculationAssertionsOnCartPage.validateEcoTax(deliveryCountry,quantity);
+        productCalculationAssertionsOnCartPage.validateVAT(deliveryCountry,productNamesQuantity);
+        productCalculationAssertionsOnCartPage.validateTotal(deliveryCountry,productNamesQuantity);
 
         softAssert.assertAll();
     }
