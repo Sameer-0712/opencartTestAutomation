@@ -6,18 +6,25 @@
 		<listener class-name="com.qa.opencart.listeners.AllureReportListener"></listener>	
 	</listeners>
 
-	<test name="Login Page Tests">
+<!--	<test name="Login Page Tests">-->
+<!--		<parameter name="browser" value="chrome"></parameter>-->
+<!--		<classes>-->
+<!--			<class name="com.qa.opencart.tests.LoginPageTest" />-->
+<!--		</classes>-->
+<!--	</test> &lt;!&ndash;-->
+<!--	Test &ndash;&gt;-->
+
+<!--	<test name="Account Page Tests">-->
+<!--		<parameter name="browser" value="firefox"></parameter>-->
+<!--		<classes>-->
+<!--			<class name="com.qa.opencart.tests.AccountPageTest" />-->
+<!--		</classes>-->
+<!--	</test>-->
+
+	<test name="Search Products Page Tests">
 		<parameter name="browser" value="chrome"></parameter>
 		<classes>
-			<class name="com.qa.opencart.tests.LoginPageTest" />
-		</classes>
-	</test> <!--
-	Test -->
-
-	<test name="Account Page Tests">
-		<parameter name="browser" value="firefox"></parameter>
-		<classes>
-			<class name="com.qa.opencart.tests.AccountPageTest" />
+			<class name="com.qa.opencart.tests.SearchProductsTest" />
 		</classes>
 	</test> <!--
 	Test -->

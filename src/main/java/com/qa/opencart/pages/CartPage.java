@@ -13,6 +13,8 @@ import org.openqa.selenium.WebDriver;
 
 import com.qa.opencart.utils.TimeUtil;
 
+import static com.qa.opencart.logger.Log.logger;
+
 public class CartPage extends Page {
 
 	private Map<String,String> prodDetails = new HashMap<String,String>();
@@ -35,7 +37,12 @@ public class CartPage extends Page {
 	private By checkoutBtn = By.xpath("//a[text()='Checkout']");
 	private By estimateShippingAndTaxes = By.cssSelector("div.panel-default:nth-of-type(2) a");
 	private By estimateShippingAndTaxesPanel = By.id("collapse-shipping");
-	
+	private String quantityColumnXpath = "//div[@class='table-responsive']/table/tbody/tr/td/a[normalize-space()='%s']/parent::td/following-sibling::td[2]";
+	private String removeProductFromCartTableXpath = quantityColumnXpath+"//button[@data-original-title='Remove']";
+	private String clickUpdateProductFromCartTableXpath = quantityColumnXpath+"//button[@data-original-title='Update']";
+	private String updateProductQuantityInCartTableXpath = quantityColumnXpath+"//input";
+
+
 	private void getProductModelAndPrice(String productName) {
 		By xpath = By.xpath("(//a[normalize-space()='"+productName+"'])[2]/parent::td/following-sibling::td[not(position()=2)]");
 		List<String> values = elUtil.getElementsText(xpath);
@@ -105,6 +112,24 @@ public class CartPage extends Page {
 		}else{
 			throw new FrameworkExceptions("Delivery Country is null");
 		}
+	}
+
+	public void removeProductFromCart(String product){
+		elUtil.clickElement(By.xpath(String.format(removeProductFromCartTableXpath, product)));
+		elUtil.waitForElementInvisibility(TimeUtil.DEFAULT_LONG_TIME,By.xpath(String.format(removeProductFromCartTableXpath, product)));
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        logger.info(String.format("%s removed from the cart...",product));
+	}
+
+	public void updateProductFromCart(String product, int quantity){
+		By updateQuantityXPath = By.xpath(String.format(updateProductQuantityInCartTableXpath, product));
+		elUtil.sendKeysToElement(updateQuantityXPath, String.valueOf(quantity));
+		elUtil.clickElement(By.xpath(String.format(clickUpdateProductFromCartTableXpath, product)));
+		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_LONG_TIME,updateQuantityXPath);
 	}
 
 }

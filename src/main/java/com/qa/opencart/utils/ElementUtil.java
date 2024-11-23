@@ -379,6 +379,12 @@ public class ElementUtil {
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
 	}
 
+	@Step("Wait for {0} seconds for the element located at {1}")
+	public boolean waitForElementInvisibility(int timeOut, By locator) {
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
+		return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+	}
+
 	@Step("Wait for {0} seconds for the element ,located \"{1}\", for attribute \"{2}\" to contain \"{3}\"")
 	public Boolean waitForElementAttributeToContain(int timeOut, By locator, String attribute, String value) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));

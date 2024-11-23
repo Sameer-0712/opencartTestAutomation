@@ -95,4 +95,6 @@ public class AppConstants {
 		return "$5.00";
 	}
 
+	public static final String NO_PRODUCTS_SEARCH_RESULTS = "There is no product that matches the search criteria.";
+
 }
