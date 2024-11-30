@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.exceptions.FrameworkExceptions;
-import com.qa.opencart.utils.CSVUtils;
 import com.qa.opencart.utils.JavaScriptUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -41,6 +40,8 @@ public class CartPage extends Page {
 	private String removeProductFromCartTableXpath = quantityColumnXpath+"//button[@data-original-title='Remove']";
 	private String clickUpdateProductFromCartTableXpath = quantityColumnXpath+"//button[@data-original-title='Update']";
 	private String updateProductQuantityInCartTableXpath = quantityColumnXpath+"//input";
+	private String unitPriceColumnXpath = "//div[@class='table-responsive']//tbody//td[5]";
+	private String productTotalColumnXpath = "//div[@class='table-responsive']/table/tbody/tr/td/a[normalize-space()='%s']/parent::td/following-sibling::td[4]";;
 
 
 	private void getProductModelAndPrice(String productName) {
@@ -90,8 +91,20 @@ public class CartPage extends Page {
 	public Map<String, String> getCostBreakUp() {
 		List<String> costs = elUtil.getElementsText(this.costs);
 		costBreakUp.put("Sub-Total", costs.get(0));
-		costBreakUp.put("Flat Shipping Rate", costs.get(1));
-		costBreakUp.put("Total", costs.get(2));
+		if(costs.size() == 2){
+			costBreakUp.put("Total", costs.get(1));
+		}
+		else{
+			costBreakUp.put("Flat Shipping Rate", costs.get(1));
+			costBreakUp.put("Total", costs.get(2));
+		}
+		return costBreakUp;
+	}
+
+	public Map<String, String> getCostBreakUpWithoutApplyingShippingAndTaxes() {
+		List<String> costs = elUtil.getElementsText(this.costs);
+		costBreakUp.put("Sub-Total", costs.get(0));
+		costBreakUp.put("Total", costs.get(1));
 		return costBreakUp;
 	}
 	
@@ -127,9 +140,18 @@ public class CartPage extends Page {
 
 	public void updateProductFromCart(String product, int quantity){
 		By updateQuantityXPath = By.xpath(String.format(updateProductQuantityInCartTableXpath, product));
+		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_LONG_TIME,updateQuantityXPath);
 		elUtil.sendKeysToElement(updateQuantityXPath, String.valueOf(quantity));
 		elUtil.clickElement(By.xpath(String.format(clickUpdateProductFromCartTableXpath, product)));
-		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_LONG_TIME,updateQuantityXPath);
+	}
+
+	public List<String> getUnitPricesFromCartTable(){
+		return elUtil.getElementsText(By.xpath(unitPriceColumnXpath));
+	}
+
+	public String getProductTotalFromCartTable(String product){
+		By xpath = By.xpath(String.format(productTotalColumnXpath, product));
+		return elUtil.getElementText(xpath);
 	}
 
 }

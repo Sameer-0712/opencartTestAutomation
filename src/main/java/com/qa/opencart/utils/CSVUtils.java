@@ -1,11 +1,10 @@
 package com.qa.opencart.utils;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
 public class CSVUtils {
@@ -16,7 +15,7 @@ public class CSVUtils {
 
     private static List<String[]> dataList;
 
-    private static List<String[]> csvData(String csvName) {
+    public static List<String[]> csvData(String csvName) {
         String csvFile = CSV_PATH + csvName + ".csv";
 
         CSVReader reader;

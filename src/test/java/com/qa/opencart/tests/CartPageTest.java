@@ -7,18 +7,19 @@ import com.qa.opencart.pages.ProductPage;
 import com.qa.opencart.productassertions.ProductCalculationAssertionsOnCartPage;
 import com.qa.opencart.utils.AppUtils;
 import com.qa.opencart.utils.CSVUtils;
+import com.qa.opencart.utils.CostCalculation;
+import com.qa.opencart.utils.StringUtil;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static com.qa.opencart.constants.AppConstants.PRODUCTS_TEST_DATA;
 
 public class CartPageTest extends BaseTest {
 
     private Map<String,String> productNamesQuantity;
     private int quantity;
-    private Object[][] data = new Object[][] {{"ipod","iPod Classic","3"},{"sony","Sony VAIO","2"},{"hp","HP LP3065","7"}};
-
     @BeforeClass
     public void loginToApp() {
         loginPage = new LoginPage(driver);
@@ -33,14 +34,15 @@ public class CartPageTest extends BaseTest {
     @BeforeMethod()
     public void addToCart(){
       productNamesQuantity = new HashMap<String,String>();
+      List<String[]> productsData =  CSVUtils.csvData(PRODUCTS_TEST_DATA);
+
       int totalQuantity = 0;
-      for(Object[] d:data){
-          String searchKey = (String) d[0];
-          productNamesQuantity.put((String) d[1],(String) d[2]);
-          appUtil.addProductToCart(searchKey,(String) d[1],String.valueOf(d[2]));
-          totalQuantity = totalQuantity + Integer.parseInt(String.valueOf(d[2]));
+      for(String[] e : productsData){
+          productNamesQuantity.put(e[1],e[2]);
+          appUtil.addProductToCart(e[0],e[1],e[2]);
+          totalQuantity = totalQuantity + Integer.parseInt(e[2]);
       }
-      quantity = totalQuantity;
+        quantity = totalQuantity;
     }
 
     @Test(dataProvider = "getData",enabled = false)
@@ -61,40 +63,53 @@ public class CartPageTest extends BaseTest {
         String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
         String successMsg = null;
         int totalQuantity = quantity;
-        int i = 0;
         while (productNamesQuantity.size() > 1){
-            cartPage.removeProductFromCart((String) data[i][1]);
-            totalQuantity = totalQuantity - Integer.parseInt((String) data[i][2]);
+            cartPage.removeProductFromCart(getEntrySetIterator().next().getKey());
+            totalQuantity = totalQuantity - Integer.parseInt(getEntrySetIterator().next().getValue());
             successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
-            productNamesQuantity.remove((String) data[i][1]);
+            productNamesQuantity.remove(getEntrySetIterator().next().getKey());
             assertCalculations(successMsg,softAssert,deliveryCountry,totalQuantity);
-            i++;
         }
 
     }
 
-    //WIP
-    @Test(dataProvider = "getData")
-    public void verifyTaxesAndTotalChangesByUpdatingProductQuantityInCart(String deliveryCountry){
+    @Test()
+    public void verifyTotalChangesByUpdatingProductQuantityInCart(){
 
         cartPage = productPage.navigateToCart();
         productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
-        String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
+        Map<String,String> breakUpMap = null;
+        String expectedTotalInCart = null;
+        String actualTotalInCart = null;
+        String expectedSubTotal = null;
+        String actualSubTotal = null;
+        String expectedTotal = null;
+        String actualTotal = null;
 
-        cartPage.updateProductFromCart((String) data[1][1],6);
-        updateProductQuantities((String) data[1][1],6);
-        String successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
-        assertCalculations(successMsg,softAssert,deliveryCountry,getSumOfQuantities());
+        Iterator<Map.Entry<String, String>> it =  getEntrySetIterator();
 
-        cartPage.updateProductFromCart((String) data[1][2],9);
-        updateProductQuantities((String) data[1][2],9);
-        successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
-        assertCalculations(successMsg,softAssert,deliveryCountry,getSumOfQuantities());
+        Random rn = new Random();
+        int randomQuantity = 0;
+        String key = null;
+        while ((it.hasNext())){
+            randomQuantity = rn.nextInt(10) + 1;
+            key = it.next().getKey();
+            productNamesQuantity.put(key,String.valueOf(randomQuantity));
+            cartPage.updateProductFromCart(key, randomQuantity);
+            expectedTotalInCart = CostCalculation.calculateTotalPriceWithoutTaxes(AppConstants.getProductPrice(key),randomQuantity);
+            actualTotalInCart = cartPage.getProductTotalFromCartTable(key);
 
-        cartPage.updateProductFromCart((String) data[1][3],4);
-        updateProductQuantities((String) data[1][3],4);
-        successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
-        assertCalculations(successMsg,softAssert,deliveryCountry,getSumOfQuantities());
+            expectedSubTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(productNamesQuantity);
+            actualSubTotal = cartPage.getCostBreakUp().get("Sub-Total");
+
+            expectedTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(productNamesQuantity);
+            actualTotal = cartPage.getCostBreakUp().get("Total");
+
+            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotalInCart),Double.parseDouble(expectedTotalInCart));
+            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualSubTotal),Double.parseDouble(expectedSubTotal));
+            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotal),Double.parseDouble(expectedTotal));
+            softAssert.assertAll();
+        }
 
 
     }
@@ -119,27 +134,15 @@ public class CartPageTest extends BaseTest {
         softAssert.assertAll();
     }
 
-    private void updateProductQuantities(String product, int quantity){
+    private Iterator<Map.Entry<String, String>> getEntrySetIterator(){
 
-        String d_string = null;
-        for(int i=0;i<data.length;i++){
-            d_string = (String) data[i][1];
-            if(d_string.equals(product)){
-                data[i][2] = quantity;
-            }
-        }
-
-    }
-
-    private int getSumOfQuantities(){
-
-        int sum = 0;
-
-        for(Object[] d: data){
-            sum = sum + Integer.parseInt(String.valueOf(d[2]));
-        }
-        return sum;
+        Set<Map.Entry<String,String>> entrySet =  productNamesQuantity.entrySet();
+        return entrySet.iterator();
 
     }
 
 }
+
+
+
+

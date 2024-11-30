@@ -23,11 +23,13 @@ public class AppConstants {
 	public static final String PLACE_ORDER_SHEET_NAME = "placeOrder";
 	public static final String PLACE_MULTIPLE_ITEMS_ORDER_SHEET_NAME = "placeMultipleItems";
 	public static final String PLACE_ORDER_GUEST_SHEET_NAME = "placeOrderGuest";
+	public static final String PRODUCTS_TEST_DATA = "Products";
 
 	// *****************************Application Success Messages*****************************
 
 	public static final String ORDER_PLACED_SUCCESS_MESSAGE = "Your order has been placed!";
 	public static final String SHIPPING_RATE_APPLIED_SUCCESS = "Success: Your shipping estimate has been applied!";
+	public static final String CART_PAGE_MODIFY_SUCCESS = "Success: You have modified your shopping cart!";
 	
 	// *****************************Special Country*****************************
 
@@ -93,6 +95,10 @@ public class AppConstants {
 
 	public static String getFlatShippingRateInString() {
 		return "$5.00";
+	}
+
+	public static String getProductPrice(String productName){
+		return getProductDetailsMap().get(productName)[2];
 	}
 
 	public static final String NO_PRODUCTS_SEARCH_RESULTS = "There is no product that matches the search criteria.";
