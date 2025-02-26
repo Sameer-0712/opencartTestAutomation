@@ -60,15 +60,15 @@ public class PlaceOrderTest extends BaseTest {
 
 		//Assert
 		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
-		productInfoAssertions.validateProductAssertions(deliveryCountry, productName, qty);
+		productInfoAssertions.validateProductDetailsForAllProducts(deliveryCountry, productName, qty);
 		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
-		productCalculationAssertions.validateTotalWithoutTaxes(deliveryCountry, productName, qty);
-		productCalculationAssertions.validateSubTotal(deliveryCountry, productName, qty);
+		productCalculationAssertions.validateTotalInProductDetailsTable(deliveryCountry, productName, qty);
+		productCalculationAssertions.validateSubTotalInCostBreakUpTable(deliveryCountry, productName, qty);
 		stdRateAssertion = new StandardRateAssertions(softAssert,checkoutPage);
-		stdRateAssertion.validateFlatShippingRate(deliveryCountry);
-		stdRateAssertion.validateEcoTax(deliveryCountry, qty);
-		productCalculationAssertions.validateVAT(deliveryCountry, productName, qty);
-		productCalculationAssertions.validateTotal(deliveryCountry, productName, qty);
+		stdRateAssertion.validateFlatShippingRateInCostBreakUpTable(deliveryCountry);
+		stdRateAssertion.validateEcoTaxInCostBreakUpTable(deliveryCountry, qty);
+		productCalculationAssertions.validateVATInCostBreakUpTable(deliveryCountry, productName, qty);
+		productCalculationAssertions.validateTotalInCostBreakUpTable(deliveryCountry, productName, qty);
 
 		//Act
 		String actualMsg = checkoutPage.confirmOrder();
@@ -111,14 +111,14 @@ public class PlaceOrderTest extends BaseTest {
 
 		//Assert
 		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
-		productInfoAssertions.validateProductAssertions(deliveryCountry);
+		productInfoAssertions.validateProductDetailsForAllProducts(deliveryCountry);
 		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
-		productCalculationAssertions.validateSubTotalForEachProduct(deliveryCountry);
-		productCalculationAssertions.validateSubTotal(deliveryCountry);
+		productCalculationAssertions.validateTotalForEachProductInProductDetailsTable(deliveryCountry);
+		productCalculationAssertions.validateSubTotalInCostBreakUpTable(deliveryCountry);
 		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
-		stdRateAssertion.validateFlatShippingRate(deliveryCountry);
-		stdRateAssertion.validateTotalEcoTax(deliveryCountry);
-		productCalculationAssertions.validateTotalVAT(deliveryCountry);
+		stdRateAssertion.validateFlatShippingRateInCostBreakUpTable(deliveryCountry);
+		stdRateAssertion.validateTotalEcoTaxInCostBreakUpTable(deliveryCountry);
+		productCalculationAssertions.validateTotalVATInCostBreakUpTable(deliveryCountry);
 		productCalculationAssertions.validateTotalForMultipleProducts(deliveryCountry);
 
 		//Act
@@ -131,7 +131,7 @@ public class PlaceOrderTest extends BaseTest {
 
 	@DataProvider
 	public Object[][] getBillingAndDeliveryCountries() {
-		return new Object[][] { { "United Kingdom", "Japan" }, { "Japan", "United Kingdom" } };
+		return new Object[][] { {"United Kingdom", "Japan"},{"Japan", "United Kingdom"} };
 	}
 
 

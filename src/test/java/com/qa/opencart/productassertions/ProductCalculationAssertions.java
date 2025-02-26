@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.qa.opencart.calculationdecorator.CalculateTotal;
+import com.qa.opencart.calculationdecorator.TaxCalculation;
 import org.testng.asserts.SoftAssert;
 
 import com.qa.opencart.constants.AppConstants;
@@ -30,61 +32,39 @@ public class ProductCalculationAssertions {
 		return checkoutPage.getProductDetailsInMap().get(productName)[3];
 	}
 
-	@Step("Verify the total before taxes for the delivery country {0}, product name {1} with quantity {2}")
-	public void validateTotalWithoutTaxes(String deliveryCountry, String productName, int quantity) {
-		String expectedTotalWithoutTaxes = null;
-		String actualTotalWithoutTaxes = null;
+	@Step("Verify the total in the product details table for the delivery country {0}, product name {1} with quantity {2}")
+	public void validateTotalInProductDetailsTable(String deliveryCountry, String productName, int quantity) {
+		double expectedTotalInProductDetailsTable = 0.0;
+		double actualTotalInProductDetailsTable = 0;
+
+		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
+			expectedTotalInProductDetailsTable = CostCalculation.calculateUnitPrice(productName,quantity);
+		}else{
+			expectedTotalInProductDetailsTable = CostCalculation.calculateSubTotalForSingleProduct(productName, quantity);
+		}
 
 		switch (productName.trim()) {
 		case "Sony VAIO":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.UNIT_PRICE_SONY_VAIO, quantity);
-			} else {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_SONY_VAIO, quantity);
-			}
-			actualTotalWithoutTaxes = String.valueOf(StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("Sony VAIO")));
-			softAssert.assertEquals(actualTotalWithoutTaxes, expectedTotalWithoutTaxes,
+			actualTotalInProductDetailsTable = StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("Sony VAIO"));
+			softAssert.assertEquals(actualTotalInProductDetailsTable, expectedTotalInProductDetailsTable,
 					AppErrors.TOTAL_BEFORE_TAXES_ERROR);
 			break;
 			
 		case "iPod Classic":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.UNIT_PRICE_IPOD_CLASSIC, quantity);
-			} else {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_IPOD_CLASSIC, quantity);
-			}
-			actualTotalWithoutTaxes = String.valueOf(StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("iPod Classic")));
-			softAssert.assertEquals(actualTotalWithoutTaxes, expectedTotalWithoutTaxes,
+			actualTotalInProductDetailsTable = StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("iPod Classic"));
+			softAssert.assertEquals(actualTotalInProductDetailsTable, expectedTotalInProductDetailsTable,
 					AppErrors.TOTAL_BEFORE_TAXES_ERROR);
 			break;
 			
 		case "HP LP3065":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.UNIT_PRICE_HP_LP, quantity);
-			} else {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_HP_LP, quantity);
-			}
-			actualTotalWithoutTaxes = String.valueOf(StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("HP LP3065")));
-			softAssert.assertEquals(actualTotalWithoutTaxes, expectedTotalWithoutTaxes,
+			actualTotalInProductDetailsTable = StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("HP LP3065"));
+			softAssert.assertEquals(actualTotalInProductDetailsTable, expectedTotalInProductDetailsTable,
 					AppErrors.TOTAL_BEFORE_TAXES_ERROR);
 			break;
 			
 		case "MacBook Pro":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.UNIT_PRICE_MACBOOK_PRO, quantity);
-			} else {
-				expectedTotalWithoutTaxes = CostCalculation
-						.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_MACBOOK_PRO, quantity);
-			}
-			actualTotalWithoutTaxes = String.valueOf(StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("MacBook Pro")));
-			softAssert.assertEquals(actualTotalWithoutTaxes, expectedTotalWithoutTaxes,
+			actualTotalInProductDetailsTable = StringUtil.removeSpecialCharacters(getTotalWithoutTaxesFromList("MacBook Pro"));
+			softAssert.assertEquals(actualTotalInProductDetailsTable, expectedTotalInProductDetailsTable,
 					AppErrors.TOTAL_BEFORE_TAXES_ERROR);
 			break;
 			
@@ -93,144 +73,127 @@ public class ProductCalculationAssertions {
 		}
 	}
 
-	@Step("Verify the subtotal for the delivery country {0}, product {1} with quantity {2}")
-	public void validateSubTotal(String deliveryCountry, String productName, int quantity) {
-		String expectedSubTotal = null;
-		String actualSubTotal = null;
+	@Step("Verify the subtotal in the Cost Break Up table for the delivery country {0}, product {1} and quantity {2}")
+	public void validateSubTotalInCostBreakUpTable(String deliveryCountry, String productName, int quantity) {
+		double expectedSubTotal = CostCalculation.calculateSubTotalForSingleProduct(productName, quantity);
+		double actualSubTotal = 0;
 
-		switch (productName.trim()) {
-		case "Sony VAIO":
-			expectedSubTotal = CostCalculation.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_SONY_VAIO,
-					quantity);
-			actualSubTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal")));
-			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
-			break;
-		case "iPod Classic":
-			expectedSubTotal = CostCalculation.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_IPOD_CLASSIC,
-					quantity);
-			actualSubTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal")));
-			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
-			break;
-		case "HP LP3065":
-			expectedSubTotal = CostCalculation.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_HP_LP,
-					quantity);
-			actualSubTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal")));
-			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
-			break;
-		case "MacBook Pro":
-			expectedSubTotal = CostCalculation.calculateTotalPriceWithoutTaxes(AppConstants.PRICE_EXTAX_MACBOOK_PRO,
-					quantity);
-			actualSubTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal")));
-			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
-			break;
-		default:
-			break;
-		}
+		actualSubTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal"));
+		softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
+
+//		switch (productName.trim()) {
+//		case "Sony VAIO":
+//			actualSubTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal"));
+//			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
+//			break;
+//		case "iPod Classic":
+//			actualSubTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal"));
+//			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
+//			break;
+//		case "HP LP3065":
+//			actualSubTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal"));
+//			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
+//			break;
+//		case "MacBook Pro":
+//			actualSubTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal"));
+//			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_ERROR);
+//			break;
+//		default:
+//			break;
+//		}
 	}
 
 	@Step("Verify the VAT for the delivery country {0}, product {1} with quantity {2}")
-	public void validateVAT(String deliveryCountry, String productName, int quantity) {
-		String expectedVAT = null;
-		String actualVAT = null;
+	public void validateVATInCostBreakUpTable(String deliveryCountry, String productName, int quantity) {
+		double expectedVAT = TaxCalculation.calculateVAT(CostCalculation.calculateSubTotalForSingleProduct(productName,quantity));
+		double actualVAT = 0.0;
 
-		switch (productName.trim()) {
-		case "Sony VAIO":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedVAT = CostCalculation.calculateVAT(AppConstants.PRICE_EXTAX_SONY_VAIO, quantity);
-				actualVAT = String.valueOf(
-						StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT")));
-				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
-			} else {
-				softAssert.assertNull(actualVAT);
-			}
-
-			break;
-		case "iPod Classic":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedVAT = CostCalculation.calculateVAT(AppConstants.PRICE_EXTAX_IPOD_CLASSIC, quantity);
-				actualVAT = String.valueOf(
-						StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT")));
-				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
-			} else {
-				softAssert.assertNull(actualVAT);
-			}
-
-			break;
-		case "HP LP3065":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedVAT = CostCalculation.calculateVAT(AppConstants.PRICE_EXTAX_HP_LP, quantity);
-				actualVAT = String.valueOf(
-						StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT")));
-				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
-			} else {
-				softAssert.assertNull(actualVAT);
-			}
-			break;
-		case "MacBook Pro":
-			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-				expectedVAT = CostCalculation.calculateVAT(AppConstants.PRICE_EXTAX_MACBOOK_PRO, quantity);
-				actualVAT = String.valueOf(
-						StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT")));
-				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
-			} else {
-				softAssert.assertNull(actualVAT);
-			}
-			break;
-		default:
-			break;
+		if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
+			actualVAT = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT"));
+			softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
+		} else {
+			softAssert.assertEquals(actualVAT,0.0, AppErrors.VAT_ERROR);
 		}
+
+//		switch (productName.trim()) {
+//		case "Sony VAIO":
+//			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
+//				actualVAT = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT"));
+//				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
+//			} else {
+//				softAssert.assertEquals(actualVAT,0);
+//			}
+//			break;
+//		case "iPod Classic":
+//			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
+//				actualVAT = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT"));
+//				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
+//			} else {
+//				softAssert.assertEquals(actualVAT,0);
+//			}
+//
+//			break;
+//		case "HP LP3065":
+//			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
+//				expectedVAT = CostCalculation.calculateVAT(AppConstants.PRICE_EXTAX_HP_LP, quantity);
+//				actualVAT = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT"));
+//				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
+//			} else {
+//				softAssert.assertNull(actualVAT);
+//			}
+//			break;
+//		case "MacBook Pro":
+//			if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
+//				expectedVAT = CostCalculation.calculateVAT(AppConstants.PRICE_EXTAX_MACBOOK_PRO, quantity);
+//				actualVAT = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT"));
+//				softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
+//			} else {
+//				softAssert.assertNull(actualVAT);
+//			}
+//			break;
+//		default:
+//			break;
+//		}
 	}
 
 	@Step("Verify the total for delivery country {0}, product {1} with quantity {2}")
-	public void validateTotal(String deliveryCountry, String productName, int quantity) {
-		String expectedTotal = null;
-		String actualTotal = null;
+	public void validateTotalInCostBreakUpTable(String deliveryCountry, String productName, int quantity) {
+		double expectedTotal = CostCalculation.calculateTotalForSingleProduct(deliveryCountry,productName,quantity);
+		double actualTotal = 0;
+		actualTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total"));
+		softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
 
-		switch (productName.trim()) {
-		case "Sony VAIO":
-			expectedTotal = CostCalculation.calculateTotalPrice(deliveryCountry, AppConstants.PRICE_EXTAX_SONY_VAIO,
-					quantity);
-			actualTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total")));
-			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
-			break;
-		case "iPod Classic":
-			expectedTotal = CostCalculation.calculateTotalPrice(deliveryCountry, AppConstants.PRICE_EXTAX_IPOD_CLASSIC,
-					quantity);
-			actualTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total")));
-			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
-			break;
-		case "HP LP3065":
-			expectedTotal = CostCalculation.calculateTotalPrice(deliveryCountry, AppConstants.PRICE_EXTAX_HP_LP,
-					quantity);
-			actualTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total")));
-			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
-			break;
-		case "MacBook Pro":
-			expectedTotal = CostCalculation.calculateTotalPrice(deliveryCountry, AppConstants.PRICE_EXTAX_MACBOOK_PRO,
-					quantity);
-			actualTotal = String.valueOf(
-					StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total")));
-			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
-			break;
-		default:
-			break;
-		}
+//		switch (productName.trim()) {
+//		case "Sony VAIO":
+//			actualTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total"));
+//			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
+//			break;
+//		case "iPod Classic":
+//			actualTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total"));
+//			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
+//			break;
+//		case "HP LP3065":
+//			actualTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total"));
+//			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
+//			break;
+//		case "MacBook Pro":
+//			expectedTotal = CostCalculation.calculateTotalPrice(deliveryCountry, AppConstants.PRICE_EXTAX_MACBOOK_PRO,
+//					quantity);
+//			actualTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total"));
+//			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
+//			break;
+//		default:
+//			break;
+//		}
 	}
 	
 	//************************************Validation for multiple items************************************
 	
 		@Step("Verify the sub total for each product for country {0}")
-		public void validateSubTotalForEachProduct(String deliveryCountry) {
+		public void validateTotalForEachProductInProductDetailsTable(String deliveryCountry) {
 			
 			Map<String, String[]> actualProductDetails = checkoutPage.getProductDetailsInMap();
-			Map<String,String> productQuantityMap = ExcelUtil.getProductQuantityMap();
+			Map<String,Integer> productQuantityMap = ExcelUtil.getProductQuantityMap();
 			
 			//verifying unit prices...
 			Map<String,Double> actualProductTotalWithoutTaxesMap = new HashMap<String,Double>();
@@ -238,8 +201,13 @@ public class ProductCalculationAssertions {
 			for (Entry<String, String[]> entry : actualProductDetails.entrySet()) {
 				actualProductTotalWithoutTaxesMap.put(entry.getKey(), StringUtil.removeSpecialCharacters(entry.getValue()[3]));
 			}
-			for(Entry<String, String> entry : productQuantityMap.entrySet()) {
-				double costWithoutTaxes =  CostCalculation.calculateTotalPriceWithoutTaxesBasedOnProductNameQuantity(entry.getKey(), Integer.parseInt(entry.getValue()));
+			double costWithoutTaxes =  0.0;
+			for(Entry<String, Integer> entry : productQuantityMap.entrySet()) {
+				if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
+					costWithoutTaxes = CostCalculation.calculateUnitPrice(entry.getKey(), entry.getValue());
+				}else{
+					costWithoutTaxes =  CostCalculation.calculateSubTotalForSingleProduct(entry.getKey(), entry.getValue());
+				}
 				expectedProductTotalWithoutTaxesMap.put(entry.getKey(), costWithoutTaxes);
 			}		
 			
@@ -248,18 +216,26 @@ public class ProductCalculationAssertions {
 		}
 		
 		@Step("Verify the subtotal for delivery country {0}")
-		public void validateSubTotal(String deliveryCountry) {		
+		public void validateSubTotalInCostBreakUpTable(String deliveryCountry) {
 			String subTotalString = checkoutPage.getBreakUpDetails(deliveryCountry).get("SubTotal");
 			double actualSubTotal = StringUtil.removeSpecialCharacters(subTotalString);
-			
-			String expectedSubTotalString = CostCalculation.calculateSubTotalUsingProductNameQuantity(ExcelUtil.getProductQuantityMap());
-			double expectedSubTotal = StringUtil.removeSpecialCharacters(expectedSubTotalString);
+
+//			double expectedSubTotal = 0;
+//			if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
+//				expectedSubTotal = CostCalculation.calculateSubTotalForMultipleProducts(ExcelUtil.getProductQuantityMap());
+//			}else{
+//				expectedSubTotal = CostCalculation.calculateSubTotalForMultipleProducts(ExcelUtil.getProductQuantityMap());
+//
+//			}
+			double expectedSubTotal = CostCalculation.calculateSubTotalForMultipleProducts(ExcelUtil.getProductQuantityMap());
+
+//			double expectedSubTotal = StringUtil.removeSpecialCharacters(expectedSubTotalString);
 			
 			softAssert.assertEquals(actualSubTotal, expectedSubTotal, AppErrors.SUB_TOTAL_MULTIPLE_PRODUCTS_ERROR);
 		}
 		
 		@Step("Verify the total VAT for delivery country {0}")
-		public void validateTotalVAT(String deliveryCountry) {
+		public void validateTotalVATInCostBreakUpTable(String deliveryCountry) {
 	
 			double actualTotalVAT = 0.0;
 			double expectedTotalVAT = 0.0;
@@ -267,8 +243,8 @@ public class ProductCalculationAssertions {
 				String actualVATString = checkoutPage.getBreakUpDetails(deliveryCountry).get("VAT");
 				actualTotalVAT = StringUtil.removeSpecialCharacters(actualVATString);
 				
-				String expectedVATString = CostCalculation.calculateTotalVAT(ExcelUtil.getProductQuantityMap());
-				expectedTotalVAT = StringUtil.removeSpecialCharacters(expectedVATString);
+				expectedTotalVAT = CostCalculation.calculateVATForMultipleProducts(ExcelUtil.getProductQuantityMap());
+//				expectedTotalVAT = StringUtil.removeSpecialCharacters(expectedVATString);
 			}	
 			
 			softAssert.assertEquals(actualTotalVAT, expectedTotalVAT, AppErrors.TOTAL_VAT_MULTIPLE_PRODUCTS_ERROR);
@@ -278,8 +254,8 @@ public class ProductCalculationAssertions {
 		@Step("Verify the total for all the products for delivery country {0}")
 		public void validateTotalForMultipleProducts(String deliveryCountry) {
 			
-			String expectedTotal = CostCalculation.calculateTotalForMultipleProducts(ExcelUtil.getProductQuantityMap(), deliveryCountry);
-			String actualTotal = String.valueOf(StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total")));
+			double expectedTotal = CostCalculation.calculateTotalForMultipleProducts(deliveryCountry, ExcelUtil.getProductQuantityMap());
+			double actualTotal = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("Total"));
 			softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
 		}
 }

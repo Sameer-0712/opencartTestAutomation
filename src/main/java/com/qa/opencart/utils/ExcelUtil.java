@@ -76,14 +76,14 @@ public class ExcelUtil {
 		return colValues;
 	}
 
-	public static Map<String, String> getProductQuantityMap() {
+	public static Map<String, Integer> getProductQuantityMap() {
 
 		Object[][] data = getTestData("placeMultipleItems");
 
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, Integer> map = new LinkedHashMap<String, Integer>();
 
 		for (int i = 0; i < data.length; i++) {
-			map.put((String) data[i][1], (String) data[i][2]);
+			map.put((String) data[i][1], Integer.parseInt((String) data[i][2]));
 		}
 		return map;
 	}

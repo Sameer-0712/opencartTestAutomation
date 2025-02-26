@@ -1,5 +1,6 @@
 package com.qa.opencart.productassertions;
 
+import com.qa.opencart.calculationdecorator.TaxCalculation;
 import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.errors.AppErrors;
 import com.qa.opencart.pages.CartPage;
@@ -40,11 +41,10 @@ public class ProductCalculationAssertionsOnCartPage {
 
     @Step("Verify the eco tax for the quantity {1}")
     public void validateEcoTax(String deliveryCountry, int quantity) {
-        String actualEcoTax = null;
+        double actualEcoTax = 0;
         if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-            String expectedEcoTax = CostCalculation.calculateEcoTax(quantity);
-            actualEcoTax = String
-                    .valueOf(StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("Eco Tax")));
+            double expectedEcoTax = TaxCalculation.calculateEcoTax(quantity);
+            actualEcoTax = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("Eco Tax"));
             softAssert.assertEquals(actualEcoTax, expectedEcoTax, AppErrors.ECO_TAX_ERROR);
         }else {
             softAssert.assertNull(actualEcoTax);
@@ -54,23 +54,22 @@ public class ProductCalculationAssertionsOnCartPage {
     //Assertions for multiple products
 
     @Step("Verify the subtotal value for {0} delivery")
-    public void validateSubTotal(String deliveryCountry, Map<String,String> productQuantityMap){
-        String expectedTotalWithoutTaxes = null;
-        String actualTotalWithoutTaxes = null;
-        expectedTotalWithoutTaxes = CostCalculation.calculateSubTotalUsingProductNameQuantity(productQuantityMap);
-        actualTotalWithoutTaxes = String.valueOf(StringUtil.removeSpecialCharacters(getTableDetailsInMap(deliveryCountry).get("Sub-Total")));
+    public void validateSubTotal(String deliveryCountry, Map<String,Integer> productQuantityMap){
+        double expectedTotalWithoutTaxes = 0;
+        double actualTotalWithoutTaxes = 0;
+        expectedTotalWithoutTaxes = CostCalculation.calculateSubTotalForMultipleProducts(productQuantityMap);
+        actualTotalWithoutTaxes = StringUtil.removeSpecialCharacters(getTableDetailsInMap(deliveryCountry).get("Sub-Total"));
         softAssert.assertEquals(actualTotalWithoutTaxes, expectedTotalWithoutTaxes,
                 AppErrors.TOTAL_BEFORE_TAXES_ERROR);
     }
 
     @Step("Verify the total VAT for {0} delivery")
-    public void validateVAT(String deliveryCountry, Map<String,String> productQuantityMap){
-        String expectedVAT = null;
-        String actualVAT = null;
+    public void validateVAT(String deliveryCountry, Map<String,Integer> productQuantityMap){
+        double expectedVAT = 0;
+        double actualVAT = 0;
         if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-            expectedVAT = CostCalculation.calculateTotalVAT(productQuantityMap);
-            actualVAT = String.valueOf(
-                    StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("VAT")));
+            expectedVAT = CostCalculation.calculateVATForMultipleProducts(productQuantityMap);
+            actualVAT = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("VAT"));
             softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
         } else {
             softAssert.assertNull(actualVAT);
@@ -78,16 +77,14 @@ public class ProductCalculationAssertionsOnCartPage {
     }
 
     @Step("Verify the total for {0} delivery")
-    public void validateTotal(String deliveryCountry, Map<String,String> productQuantityMap){
-        String expectedTotal = null;
-        String actualTotal = null;
-        expectedTotal = CostCalculation.calculateTotalForMultipleProducts(productQuantityMap,deliveryCountry);
+    public void validateTotal(String deliveryCountry, Map<String,Integer> productQuantityMap){
+        double expectedTotal = 0;
+        double actualTotal = 0;
+        expectedTotal = CostCalculation.calculateTotalForMultipleProducts(deliveryCountry, productQuantityMap);
         if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
-            actualTotal = String.valueOf(
-                    StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("Total")));
+            actualTotal = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("Total"));
         }else{
-            actualTotal = String.valueOf(
-                    StringUtil.removeSpecialCharacters(cartPage.getCostBreakUp().get("Total")));
+            actualTotal = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUp().get("Total"));
         }
         softAssert.assertEquals(actualTotal, expectedTotal, AppErrors.TOTAL_ERROR);
     }

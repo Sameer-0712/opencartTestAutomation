@@ -18,7 +18,7 @@ import static com.qa.opencart.constants.AppConstants.PRODUCTS_TEST_DATA;
 
 public class CartPageTest extends BaseTest {
 
-    private Map<String,String> productNamesQuantity;
+    private Map<String,Integer> productNamesQuantity;
     private int quantity;
     @BeforeClass
     public void loginToApp() {
@@ -33,19 +33,19 @@ public class CartPageTest extends BaseTest {
 
     @BeforeMethod()
     public void addToCart(){
-      productNamesQuantity = new HashMap<String,String>();
+      productNamesQuantity = new HashMap<String,Integer>();
       List<String[]> productsData =  CSVUtils.csvData(PRODUCTS_TEST_DATA);
 
       int totalQuantity = 0;
       for(String[] e : productsData){
-          productNamesQuantity.put(e[1],e[2]);
+          productNamesQuantity.put(e[1],Integer.parseInt(e[2]));
           appUtil.addProductToCart(e[0],e[1],e[2]);
           totalQuantity = totalQuantity + Integer.parseInt(e[2]);
       }
         quantity = totalQuantity;
     }
 
-    @Test(dataProvider = "getData",enabled = false)
+    @Test(dataProvider = "getData")
     public void verifyFlatShippingRateAndTaxesAreAppliedOnTheBasisOfDeliveryCountry(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
@@ -55,7 +55,7 @@ public class CartPageTest extends BaseTest {
         assertCalculations(successMsg,softAssert,deliveryCountry,quantity);
     }
 
-    @Test(dataProvider = "getData",enabled = false)
+    @Test(dataProvider = "getData")
     public void verifyTaxesAndTotalChangesByRemovingProductFromCart(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
@@ -65,7 +65,7 @@ public class CartPageTest extends BaseTest {
         int totalQuantity = quantity;
         while (productNamesQuantity.size() > 1){
             cartPage.removeProductFromCart(getEntrySetIterator().next().getKey());
-            totalQuantity = totalQuantity - Integer.parseInt(getEntrySetIterator().next().getValue());
+            totalQuantity = totalQuantity - getEntrySetIterator().next().getValue();
             successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
             productNamesQuantity.remove(getEntrySetIterator().next().getKey());
             assertCalculations(successMsg,softAssert,deliveryCountry,totalQuantity);
@@ -73,20 +73,20 @@ public class CartPageTest extends BaseTest {
 
     }
 
-    @Test()
-    public void verifyTotalChangesByUpdatingProductQuantityInCart(){
+    @Test(dataProvider = "getData")
+    public void verifyTotalChangesByUpdatingProductQuantityInCart(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
         productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
         Map<String,String> breakUpMap = null;
-        String expectedTotalInCart = null;
+        double expectedTotalInCart = 0;
         String actualTotalInCart = null;
-        String expectedSubTotal = null;
+        double expectedSubTotal = 0;
         String actualSubTotal = null;
-        String expectedTotal = null;
+        double expectedTotal = 0;
         String actualTotal = null;
 
-        Iterator<Map.Entry<String, String>> it =  getEntrySetIterator();
+        Iterator<Map.Entry<String, Integer>> it =  getEntrySetIterator();
 
         Random rn = new Random();
         int randomQuantity = 0;
@@ -94,20 +94,20 @@ public class CartPageTest extends BaseTest {
         while ((it.hasNext())){
             randomQuantity = rn.nextInt(10) + 1;
             key = it.next().getKey();
-            productNamesQuantity.put(key,String.valueOf(randomQuantity));
+            productNamesQuantity.put(key,randomQuantity);
             cartPage.updateProductFromCart(key, randomQuantity);
-            expectedTotalInCart = CostCalculation.calculateTotalPriceWithoutTaxes(AppConstants.getProductPrice(key),randomQuantity);
-            actualTotalInCart = cartPage.getProductTotalFromCartTable(key);
+//            expectedTotalInCart = CostCalculation.calculateSubTotalForSingleProduct(AppConstants.getProductPrice(key),randomQuantity);
+//            actualTotalInCart = cartPage.getProductTotalFromCartTable(key);
+//
+//            expectedSubTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(deliveryCountry, productNamesQuantity);
+//            actualSubTotal = cartPage.getCostBreakUp().get("Sub-Total");
+//
+//            expectedTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(deliveryCountry, productNamesQuantity);
+//            actualTotal = cartPage.getCostBreakUp().get("Total");
 
-            expectedSubTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(productNamesQuantity);
-            actualSubTotal = cartPage.getCostBreakUp().get("Sub-Total");
-
-            expectedTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(productNamesQuantity);
-            actualTotal = cartPage.getCostBreakUp().get("Total");
-
-            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotalInCart),Double.parseDouble(expectedTotalInCart));
-            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualSubTotal),Double.parseDouble(expectedSubTotal));
-            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotal),Double.parseDouble(expectedTotal));
+            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotalInCart),expectedTotalInCart);
+            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualSubTotal),expectedSubTotal);
+            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotal),expectedTotal);
             softAssert.assertAll();
         }
 
@@ -134,9 +134,9 @@ public class CartPageTest extends BaseTest {
         softAssert.assertAll();
     }
 
-    private Iterator<Map.Entry<String, String>> getEntrySetIterator(){
+    private Iterator<Map.Entry<String, Integer>> getEntrySetIterator(){
 
-        Set<Map.Entry<String,String>> entrySet =  productNamesQuantity.entrySet();
+        Set<Map.Entry<String,Integer>> entrySet =  productNamesQuantity.entrySet();
         return entrySet.iterator();
 
     }

@@ -1,5 +1,6 @@
 package com.qa.opencart.productassertions;
 
+import com.qa.opencart.calculationdecorator.TaxCalculation;
 import org.testng.asserts.SoftAssert;
 
 import com.qa.opencart.constants.AppConstants;
@@ -22,21 +23,21 @@ public class StandardRateAssertions {
 	}
 
 	@Step("Verify the shipping rate for the delivery country {0}")
-	public void validateFlatShippingRate(String deliveryCountry) {
-		softAssert.assertEquals(checkoutPage.getBreakUpDetails(deliveryCountry).get("FlatShippingRate"),
-				AppConstants.getFlatShippingRateInString(), AppErrors.FLAT_SHIPPING_RATE_ERROR);
+	public void validateFlatShippingRateInCostBreakUpTable(String deliveryCountry) {
+
+		softAssert.assertEquals(StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("FlatShippingRate")),
+				AppConstants.FLAT_SHIPPING_RATE, AppErrors.FLAT_SHIPPING_RATE_ERROR);
 	}
 
 	@Step("Verify the eco tax for the quantity {1}")
-	public void validateEcoTax(String deliveryCountry, int quantity) {
-		String actualEcoTax = null;
+	public void validateEcoTaxInCostBreakUpTable(String deliveryCountry, int quantity) {
+		double actualEcoTax = 0.0;
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
-			String expectedEcoTax = CostCalculation.calculateEcoTax(quantity);
-			actualEcoTax = String
-					.valueOf(StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("EcoTax")));
+			double expectedEcoTax = TaxCalculation.calculateEcoTax(quantity);
+			actualEcoTax = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("EcoTax"));
 			softAssert.assertEquals(actualEcoTax, expectedEcoTax, AppErrors.ECO_TAX_ERROR);
 		}else {
-			softAssert.assertNull(actualEcoTax);
+			softAssert.assertEquals(actualEcoTax,0.0, AppErrors.ECO_TAX_ERROR);
 		}	
 	}
 
@@ -44,27 +45,26 @@ public class StandardRateAssertions {
 	public void validateShippingRateInDeliveryMethodStep(String deliveryCountry) {
 		if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
 			softAssert.assertTrue(checkoutPage.getFlatShippingRateRadioBtnText()
-					.contains(AppConstants.FLAT_SHIPPING_RATE_UK_DELIVERY));
+					.contains(String.valueOf(AppConstants.FLAT_SHIPPING_RATE_UK_DELIVERY)));
 		} else {
 			softAssert.assertTrue(checkoutPage.getFlatShippingRateRadioBtnText()
-					.contains(AppConstants.FLAT_SHIPPING_RATE_NON_UK_DELIVERY));
+					.contains(String.valueOf(AppConstants.FLAT_SHIPPING_RATE_NON_UK_DELIVERY)));
 		}
 	}
 	
 	//***************************Assertions for Multiple Products**********************************
 	
 	@Step("Verify the total eco tax for the delivery country {0}")
-	public void validateTotalEcoTax(String deliveryCountry) {
-		String actualEcoTax = null;
+	public void validateTotalEcoTaxInCostBreakUpTable(String deliveryCountry) {
+		double actualEcoTax = 0.0;
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
 			String[] quantitiesStringArray = ExcelUtil.getColumnData(AppConstants.PLACE_MULTIPLE_ITEMS_ORDER_SHEET_NAME, "Quantity");
 			int totalQuantity = StringUtil.getSumFromStringArray(quantitiesStringArray);
-			String expectedEcoTax = CostCalculation.calculateEcoTax(totalQuantity);
-			actualEcoTax = String
-					.valueOf(StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("EcoTax")));
+			double expectedEcoTax = TaxCalculation.calculateEcoTax(totalQuantity);
+			actualEcoTax = StringUtil.removeSpecialCharacters(checkoutPage.getBreakUpDetails(deliveryCountry).get("EcoTax"));
 			softAssert.assertEquals(actualEcoTax, expectedEcoTax, AppErrors.ECO_TAX_ERROR);
 		}else {
-			softAssert.assertNull(actualEcoTax);
+			softAssert.assertEquals(actualEcoTax,0.0);
 		}	
 	}
 

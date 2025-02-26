@@ -6,6 +6,9 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+/**
+ * A generic Page class which will have common functionalities across all the pages
+ */
 public class Page {
 
     protected WebDriver driver;
