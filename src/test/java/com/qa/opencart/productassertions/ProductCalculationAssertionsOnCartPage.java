@@ -35,19 +35,19 @@ public class ProductCalculationAssertionsOnCartPage {
 
     @Step("Verify the shipping rate for the delivery country {0}")
     public void validateFlatShippingRate(String deliveryCountry) {
-        softAssert.assertEquals(cartPage.getFlatShippingRate(deliveryCountry),
-                    AppConstants.getFlatShippingRateInString(), AppErrors.FLAT_SHIPPING_RATE_ERROR);
+        softAssert.assertEquals(StringUtil.removeSpecialCharacters(cartPage.getFlatShippingRate(deliveryCountry)),
+                    AppConstants.FLAT_SHIPPING_RATE, AppErrors.FLAT_SHIPPING_RATE_ERROR);
     }
 
     @Step("Verify the eco tax for the quantity {1}")
     public void validateEcoTax(String deliveryCountry, int quantity) {
-        double actualEcoTax = 0;
+        double actualEcoTax = 0.0;
         if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
             double expectedEcoTax = TaxCalculation.calculateEcoTax(quantity);
             actualEcoTax = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("Eco Tax"));
             softAssert.assertEquals(actualEcoTax, expectedEcoTax, AppErrors.ECO_TAX_ERROR);
         }else {
-            softAssert.assertNull(actualEcoTax);
+            softAssert.assertEquals(actualEcoTax,0.0);
         }
     }
 
@@ -65,14 +65,14 @@ public class ProductCalculationAssertionsOnCartPage {
 
     @Step("Verify the total VAT for {0} delivery")
     public void validateVAT(String deliveryCountry, Map<String,Integer> productQuantityMap){
-        double expectedVAT = 0;
-        double actualVAT = 0;
+        double expectedVAT = 0.0;
+        double actualVAT = 0.0;
         if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
             expectedVAT = CostCalculation.calculateVATForMultipleProducts(productQuantityMap);
             actualVAT = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUpForUK().get("VAT"));
             softAssert.assertEquals(actualVAT, expectedVAT, AppErrors.VAT_ERROR);
         } else {
-            softAssert.assertNull(actualVAT);
+            softAssert.assertEquals(actualVAT,0.0);
         }
     }
 

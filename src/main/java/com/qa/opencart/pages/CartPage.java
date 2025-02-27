@@ -91,12 +91,11 @@ public class CartPage extends Page {
 	public Map<String, String> getCostBreakUp() {
 		List<String> costs = elUtil.getElementsText(this.costs);
 		costBreakUp.put("Sub-Total", costs.get(0));
-		if(costs.size() == 2){
-			costBreakUp.put("Total", costs.get(1));
-		}
-		else{
-			costBreakUp.put("Flat Shipping Rate", costs.get(1));
+		costBreakUp.put("Flat Shipping Rate", costs.get(1));
+		if (costs.size() == 3) {
 			costBreakUp.put("Total", costs.get(2));
+		} else{
+			costBreakUp.put("Total", costs.get(4));
 		}
 		return costBreakUp;
 	}
@@ -142,6 +141,7 @@ public class CartPage extends Page {
 		By updateQuantityXPath = By.xpath(String.format(updateProductQuantityInCartTableXpath, product));
 		elUtil.waitForElementVisibility(TimeUtil.DEFAULT_LONG_TIME,updateQuantityXPath);
 		elUtil.sendKeysToElement(updateQuantityXPath, String.valueOf(quantity));
+		logger.info("Quantity for Product {} is updated to {}",product,quantity);
 		elUtil.clickElement(By.xpath(String.format(clickUpdateProductFromCartTableXpath, product)));
 	}
 

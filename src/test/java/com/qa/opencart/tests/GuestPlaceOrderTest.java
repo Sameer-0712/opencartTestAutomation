@@ -42,7 +42,6 @@ public class GuestPlaceOrderTest extends BaseTest {
         productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
         productInfoAssertions.validateProductDetailsForAllProducts(deliveryCountry, productName, qty);
         productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
-//        productCalculationAssertions.validateTotalWithoutTaxes(deliveryCountry, productName, qty);
         productCalculationAssertions.validateSubTotalInCostBreakUpTable(deliveryCountry, productName, qty);
         stdRateAssertion = new StandardRateAssertions(softAssert,checkoutPage);
         stdRateAssertion.validateFlatShippingRateInCostBreakUpTable(deliveryCountry);

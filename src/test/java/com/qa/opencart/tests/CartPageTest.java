@@ -20,6 +20,7 @@ public class CartPageTest extends BaseTest {
 
     private Map<String,Integer> productNamesQuantity;
     private int quantity;
+
     @BeforeClass
     public void loginToApp() {
         loginPage = new LoginPage(driver);
@@ -52,7 +53,7 @@ public class CartPageTest extends BaseTest {
         productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
         String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
         String successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
-        assertCalculations(successMsg,softAssert,deliveryCountry,quantity);
+        assertCalculations(successMsg,deliveryCountry,quantity);
     }
 
     @Test(dataProvider = "getData")
@@ -68,7 +69,7 @@ public class CartPageTest extends BaseTest {
             totalQuantity = totalQuantity - getEntrySetIterator().next().getValue();
             successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
             productNamesQuantity.remove(getEntrySetIterator().next().getKey());
-            assertCalculations(successMsg,softAssert,deliveryCountry,totalQuantity);
+            assertCalculations(successMsg,deliveryCountry,totalQuantity);
         }
 
     }
@@ -78,13 +79,14 @@ public class CartPageTest extends BaseTest {
 
         cartPage = productPage.navigateToCart();
         productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
-        Map<String,String> breakUpMap = null;
-        double expectedTotalInCart = 0;
-        String actualTotalInCart = null;
-        double expectedSubTotal = 0;
-        String actualSubTotal = null;
-        double expectedTotal = 0;
-        String actualTotal = null;
+        double expectedTotalInCartTable = 0.0;
+        double actualTotalInCartTable = 0.0;
+        double expectedSubTotalInBreakUpTable = 0.0;
+        double actualSubTotalInBreakUpTable = 0.0;
+        double expectedTotalInBreakUpTable = 0.0;
+        double actualTotalInBreakUpTable = 0.0;
+        String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
+        String successMsg = null;
 
         Iterator<Map.Entry<String, Integer>> it =  getEntrySetIterator();
 
@@ -96,21 +98,25 @@ public class CartPageTest extends BaseTest {
             key = it.next().getKey();
             productNamesQuantity.put(key,randomQuantity);
             cartPage.updateProductFromCart(key, randomQuantity);
-//            expectedTotalInCart = CostCalculation.calculateSubTotalForSingleProduct(AppConstants.getProductPrice(key),randomQuantity);
-//            actualTotalInCart = cartPage.getProductTotalFromCartTable(key);
-//
-//            expectedSubTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(deliveryCountry, productNamesQuantity);
-//            actualSubTotal = cartPage.getCostBreakUp().get("Sub-Total");
-//
-//            expectedTotal = CostCalculation.calculateSubTotalUsingProductNameQuantity(deliveryCountry, productNamesQuantity);
-//            actualTotal = cartPage.getCostBreakUp().get("Total");
-
-            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotalInCart),expectedTotalInCart);
-            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualSubTotal),expectedSubTotal);
-            softAssert.assertEquals(StringUtil.removeSpecialCharacters(actualTotal),expectedTotal);
-            softAssert.assertAll();
+            if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
+                expectedTotalInCartTable = CostCalculation.calculateUnitPrice(key,randomQuantity);
+            }else{
+                expectedTotalInCartTable = CostCalculation.calculateSubTotalForSingleProduct(key,randomQuantity);
+            }
+            successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
+            actualTotalInCartTable = StringUtil.removeSpecialCharacters(cartPage.getProductTotalFromCartTable(key));
+            softAssert.assertEquals(actualTotalInCartTable, expectedTotalInCartTable, String.format("Actual Total for %s in Cart table is not equal to the expected total in Cart table",key));
         }
+            expectedSubTotalInBreakUpTable = CostCalculation.calculateSubTotalForMultipleProducts(productNamesQuantity);
+            actualSubTotalInBreakUpTable = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUp().get("Sub-Total"));
 
+            expectedTotalInBreakUpTable = CostCalculation.calculateTotalForMultipleProducts(deliveryCountry,productNamesQuantity);
+            actualTotalInBreakUpTable = StringUtil.removeSpecialCharacters(cartPage.getCostBreakUp().get("Total"));
+
+        softAssert.assertEquals(successMsg,AppConstants.SHIPPING_RATE_APPLIED_SUCCESS);
+        softAssert.assertEquals(actualSubTotalInBreakUpTable, expectedSubTotalInBreakUpTable, "Actual SubTotal in Breakup table is not equal to the expected SubTotal in Breakup table");
+        softAssert.assertEquals(actualTotalInBreakUpTable,expectedTotalInBreakUpTable,"Actual Total in Breakup table is not equal to the expected total in Breakup table");
+        softAssert.assertAll();
 
     }
 
@@ -121,10 +127,10 @@ public class CartPageTest extends BaseTest {
 
     @DataProvider
     public Object[][] getData(){
-        return new Object[][] {{"United Kingdom"}};
+        return new Object[][] {{"United Kingdom"},{"Japan"}};
     }
 
-    private void assertCalculations(String successMsg, SoftAssert softAssert, String deliveryCountry, int quantity){
+    private void assertCalculations(String successMsg, String deliveryCountry, int quantity){
         softAssert.assertEquals(successMsg,AppConstants.SHIPPING_RATE_APPLIED_SUCCESS);
         productCalculationAssertionsOnCartPage.validateSubTotal(deliveryCountry,productNamesQuantity);
         productCalculationAssertionsOnCartPage.validateFlatShippingRate(deliveryCountry);
