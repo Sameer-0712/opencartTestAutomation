@@ -4,13 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotInteractableException;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -96,7 +90,11 @@ public class ElementUtil {
 
 	@Step("Click the element located at {0}")
 	public void clickElement(By locator) {
-		getElement(locator).click();
+		try{
+			waitForElementPresence(TimeUtil.DEFAULT_MEDIUM_TIME,locator).click();
+		}catch (StaleElementReferenceException e){
+			waitForElementPresence(TimeUtil.DEFAULT_MEDIUM_TIME,locator).click();
+		}
 	}
 
 	@Step("Send text {1} to locator {0}")

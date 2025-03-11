@@ -4,7 +4,7 @@ import com.qa.opencart.base.BaseTest;
 import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.pages.LoginPage;
 import com.qa.opencart.pages.ProductPage;
-import com.qa.opencart.productassertions.ProductCalculationAssertionsOnCartPage;
+import com.qa.opencart.productassertions.Assertions;
 import com.qa.opencart.utils.AppUtils;
 import com.qa.opencart.utils.CSVUtils;
 import com.qa.opencart.utils.CostCalculation;
@@ -50,17 +50,16 @@ public class CartPageTest extends BaseTest {
     public void verifyFlatShippingRateAndTaxesAreAppliedOnTheBasisOfDeliveryCountry(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
-        productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
         String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
         String successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
-        assertCalculations(successMsg,deliveryCountry,quantity);
+        Assertions assertions = new Assertions(softAssert,cartPage,deliveryCountry,quantity);
+        assertions.validateProductCalculationsOnCartPage(successMsg,productNamesQuantity);
     }
 
     @Test(dataProvider = "getData")
     public void verifyTaxesAndTotalChangesByRemovingProductFromCart(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
-        productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
         String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
         String successMsg = null;
         int totalQuantity = quantity;
@@ -69,7 +68,8 @@ public class CartPageTest extends BaseTest {
             totalQuantity = totalQuantity - getEntrySetIterator().next().getValue();
             successMsg = cartPage.applyShippingRate(countryRegionPinData[0],countryRegionPinData[1],countryRegionPinData[2]);
             productNamesQuantity.remove(getEntrySetIterator().next().getKey());
-            assertCalculations(successMsg,deliveryCountry,totalQuantity);
+            Assertions assertions = new Assertions(softAssert,cartPage,deliveryCountry,totalQuantity);
+            assertions.validateProductCalculationsOnCartPage(successMsg,productNamesQuantity);
         }
 
     }
@@ -78,7 +78,6 @@ public class CartPageTest extends BaseTest {
     public void verifyTotalChangesByUpdatingProductQuantityInCart(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
-        productCalculationAssertionsOnCartPage = new ProductCalculationAssertionsOnCartPage(softAssert,cartPage);
         double expectedTotalInCartTable = 0.0;
         double actualTotalInCartTable = 0.0;
         double expectedSubTotalInBreakUpTable = 0.0;
@@ -128,16 +127,6 @@ public class CartPageTest extends BaseTest {
     @DataProvider
     public Object[][] getData(){
         return new Object[][] {{"United Kingdom"},{"Japan"}};
-    }
-
-    private void assertCalculations(String successMsg, String deliveryCountry, int quantity){
-        softAssert.assertEquals(successMsg,AppConstants.SHIPPING_RATE_APPLIED_SUCCESS);
-        productCalculationAssertionsOnCartPage.validateSubTotal(deliveryCountry,productNamesQuantity);
-        productCalculationAssertionsOnCartPage.validateFlatShippingRate(deliveryCountry);
-        productCalculationAssertionsOnCartPage.validateEcoTax(deliveryCountry,quantity);
-        productCalculationAssertionsOnCartPage.validateVAT(deliveryCountry,productNamesQuantity);
-        productCalculationAssertionsOnCartPage.validateTotal(deliveryCountry,productNamesQuantity);
-        softAssert.assertAll();
     }
 
     private Iterator<Map.Entry<String, Integer>> getEntrySetIterator(){

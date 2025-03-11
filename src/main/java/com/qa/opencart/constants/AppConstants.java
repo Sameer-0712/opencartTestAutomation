@@ -94,13 +94,6 @@ public class AppConstants {
 		return getProductDetailsMap().get(product);
 	}
 
-	public static String getFlatShippingRateInString() {
-		return "$5.00";
-	}
-
-	public static double getProductPrice(String productName){
-		return Double.parseDouble(getProductDetailsMap().get(productName)[2].toString());
-	}
 
 	public static final String NO_PRODUCTS_SEARCH_RESULTS = "There is no product that matches the search criteria.";
 

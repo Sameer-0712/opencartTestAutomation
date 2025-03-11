@@ -1,8 +1,7 @@
 package com.qa.opencart.tests;
 
 import com.qa.opencart.pages.LoginPage;
-import com.qa.opencart.productassertions.ShippingRateRadioButtonAssertions;
-import com.qa.opencart.productassertions.StandardRateAssertions;
+import com.qa.opencart.productassertions.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -11,8 +10,6 @@ import com.qa.opencart.base.BaseTest;
 import com.qa.opencart.constants.AppConstants;
 import com.qa.opencart.errors.AppErrors;
 import com.qa.opencart.logger.Log;
-import com.qa.opencart.productassertions.ProductCalculationAssertions;
-import com.qa.opencart.productassertions.ProductInfoAssertions;
 import com.qa.opencart.utils.AppUtils;
 import com.qa.opencart.utils.ExcelUtil;
 
@@ -59,16 +56,8 @@ public class PlaceOrderTest extends BaseTest {
 		checkoutPage.selectDeliverAndPaymentMethod();
 
 		//Assert
-		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
-		productInfoAssertions.validateProductDetailsForAllProducts(deliveryCountry, productName, qty);
-		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
-		productCalculationAssertions.validateTotalInProductDetailsTable(deliveryCountry, productName, qty);
-		productCalculationAssertions.validateSubTotalInCostBreakUpTable(deliveryCountry, productName, qty);
-		stdRateAssertion = new StandardRateAssertions(softAssert,checkoutPage);
-		stdRateAssertion.validateFlatShippingRateInCostBreakUpTable(deliveryCountry);
-		stdRateAssertion.validateEcoTaxInCostBreakUpTable(deliveryCountry, qty);
-		productCalculationAssertions.validateVATInCostBreakUpTable(deliveryCountry, productName, qty);
-		productCalculationAssertions.validateTotalInCostBreakUpTable(deliveryCountry, productName, qty);
+		Assertions assertions = new Assertions(softAssert,checkoutPage,deliveryCountry,productName,qty);
+		assertions.validateProductCalculationsOnCheckoutPage(true);
 
 		//Act
 		String actualMsg = checkoutPage.confirmOrder();
@@ -110,16 +99,8 @@ public class PlaceOrderTest extends BaseTest {
 		checkoutPage.selectDeliverAndPaymentMethod();
 
 		//Assert
-		productInfoAssertions = new ProductInfoAssertions(softAssert, checkoutPage);
-		productInfoAssertions.validateProductDetailsForAllProducts(deliveryCountry);
-		productCalculationAssertions = new ProductCalculationAssertions(softAssert, checkoutPage);
-		productCalculationAssertions.validateTotalForEachProductInProductDetailsTable(deliveryCountry);
-		productCalculationAssertions.validateSubTotalInCostBreakUpTable(deliveryCountry);
-		stdRateAssertion = new StandardRateAssertions(softAssert, checkoutPage);
-		stdRateAssertion.validateFlatShippingRateInCostBreakUpTable(deliveryCountry);
-		stdRateAssertion.validateTotalEcoTaxInCostBreakUpTable(deliveryCountry);
-		productCalculationAssertions.validateTotalVATInCostBreakUpTable(deliveryCountry);
-		productCalculationAssertions.validateTotalForMultipleProducts(deliveryCountry);
+		Assertions assertions = new Assertions(softAssert,checkoutPage,deliveryCountry);
+		assertions.validateProductCalculationsOnCheckoutPage(false);
 
 		//Act
 		String actualMsg = checkoutPage.confirmOrder();
