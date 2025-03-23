@@ -8,11 +8,10 @@ public class VATDecorator extends TaxDecorator{
 
     public VATDecorator(CalculateTotal total) {
         super(total);
-//        System.out.println("Inside VATDecorator constructor...");
     }
 
+    @Override
     public double calculateTotal(String productName, int quantity) {
-//        System.out.println("Inside VATDecorator calculateTotal...");
         return total.calculateTotal(productName,quantity) + calculateVAT(productName,quantity);
     }
 

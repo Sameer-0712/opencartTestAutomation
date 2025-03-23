@@ -16,8 +16,8 @@ import static com.qa.opencart.logger.Log.logger;
 
 public class CartPage extends Page {
 
-	private Map<String,String> prodDetails = new HashMap<String,String>();
-	private Map<String,String> costBreakUp = new HashMap<String,String>();
+	private Map<String,String> prodDetails = new HashMap<>();
+	private Map<String,String> costBreakUp = new HashMap<>();
 	private JavaScriptUtils jsUtil;
 
 	public CartPage(WebDriver driver) {
@@ -41,7 +41,7 @@ public class CartPage extends Page {
 	private String clickUpdateProductFromCartTableXpath = quantityColumnXpath+"//button[@data-original-title='Update']";
 	private String updateProductQuantityInCartTableXpath = quantityColumnXpath+"//input";
 	private String unitPriceColumnXpath = "//div[@class='table-responsive']//tbody//td[5]";
-	private String productTotalColumnXpath = "//div[@class='table-responsive']/table/tbody/tr/td/a[normalize-space()='%s']/parent::td/following-sibling::td[4]";;
+	private String productTotalColumnXpath = "//div[@class='table-responsive']/table/tbody/tr/td/a[normalize-space()='%s']/parent::td/following-sibling::td[4]";
 
 
 	private void getProductModelAndPrice(String productName) {
@@ -129,12 +129,7 @@ public class CartPage extends Page {
 	public void removeProductFromCart(String product){
 		elUtil.clickElement(By.xpath(String.format(removeProductFromCartTableXpath, product)));
 		elUtil.waitForElementInvisibility(TimeUtil.DEFAULT_LONG_TIME,By.xpath(String.format(removeProductFromCartTableXpath, product)));
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-        logger.info(String.format("%s removed from the cart...",product));
+        logger.info("{} removed from the cart...",product);
 	}
 
 	public void updateProductFromCart(String product, int quantity){

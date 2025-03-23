@@ -11,7 +11,6 @@ public class TaxDecorator implements CalculateTotal{
 
     @Override
     public double calculateTotal(String productName, int quantity) {
-//        System.out.println("Inside TaxDecorator calculateTotal...");
         return total.calculateTotal(productName,quantity);
     }
 

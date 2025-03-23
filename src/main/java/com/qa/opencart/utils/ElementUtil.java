@@ -270,19 +270,16 @@ public class ElementUtil {
 	public void hoverElement(By locator) {
 		action = new Actions(driver);
 		action.moveToElement(getElement(locator)).perform();
-		;
 	}
 
 	public void doActionsClick(By locator) {
 		action = new Actions(driver);
 		action.click(getElement(locator)).perform();
-		;
 	}
 
 	public void doActionsSendKeys(By locator, String text) {
 		action = new Actions(driver);
 		action.sendKeys(getElement(locator), text).perform();
-		;
 	}
 
 	public void handleMenuSubMenuLevel2(By parentMenu, By childMenu) throws InterruptedException {
