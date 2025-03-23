@@ -98,8 +98,8 @@ public class ProductInfoAssertions {
 	public void validateProductDetailsForAllProducts(String deliveryCountry) {
 
 		Map<String, String[]> actualProductDetails = checkoutPage.getProductDetailsInMap();
-		Map<String, Integer> expectedProductDetails = ExcelUtil.getProductQuantityMap();
-		
+
+
 		//verifying quantities...
 		Map<String,Integer> actualProductQuantitiesMap = new HashMap<String,Integer>();
 		Map<String,Integer> expectedProductQuantitiesMap = ExcelUtil.getProductQuantityMap();

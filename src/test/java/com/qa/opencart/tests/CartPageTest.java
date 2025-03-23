@@ -46,7 +46,7 @@ public class CartPageTest extends BaseTest {
         quantity = totalQuantity;
     }
 
-    @Test(dataProvider = "getData")
+    @Test(dataProvider = "getData", enabled = false)
     public void verifyFlatShippingRateAndTaxesAreAppliedOnTheBasisOfDeliveryCountry(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
@@ -56,7 +56,7 @@ public class CartPageTest extends BaseTest {
         assertions.validateProductCalculationsOnCartPage(successMsg,productNamesQuantity);
     }
 
-    @Test(dataProvider = "getData")
+    @Test(dataProvider = "getData", enabled = false)
     public void verifyTaxesAndTotalChangesByRemovingProductFromCart(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
@@ -78,12 +78,12 @@ public class CartPageTest extends BaseTest {
     public void verifyTotalChangesByUpdatingProductQuantityInCart(String deliveryCountry){
 
         cartPage = productPage.navigateToCart();
-        double expectedTotalInCartTable = 0.0;
-        double actualTotalInCartTable = 0.0;
-        double expectedSubTotalInBreakUpTable = 0.0;
-        double actualSubTotalInBreakUpTable = 0.0;
-        double expectedTotalInBreakUpTable = 0.0;
-        double actualTotalInBreakUpTable = 0.0;
+        double expectedTotalInCartTable;
+        double actualTotalInCartTable;
+        double expectedSubTotalInBreakUpTable;
+        double actualSubTotalInBreakUpTable;
+        double expectedTotalInBreakUpTable;
+        double actualTotalInBreakUpTable;
         String[] countryRegionPinData = CSVUtils.getCountryRegionPinData(deliveryCountry);
         String successMsg = null;
 

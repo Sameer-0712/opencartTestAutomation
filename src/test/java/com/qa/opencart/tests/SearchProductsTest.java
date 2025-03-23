@@ -1,15 +1,12 @@
 package com.qa.opencart.tests;
 
 import java.util.List;
-import java.util.Map;
 
 import com.qa.opencart.pages.LoginPage;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
-
 import com.qa.opencart.base.BaseTest;
 
 import static com.qa.opencart.constants.AppConstants.NO_PRODUCTS_SEARCH_RESULTS;
@@ -29,13 +26,13 @@ public class SearchProductsTest extends BaseTest {
 		searchResultsPage =  page.doSearch(searchKey);
 		List<String> products = searchResultsPage.getSearchProductsList();
 
-		if(products.size() > 0){
+		if(!products.isEmpty()){
 			for(String product: products){
 				Assert.assertTrue(product.toLowerCase().contains(searchKey.toLowerCase()));
 				logger.info(String.format("%s contains the text '%s'",product,searchKey));
 			}
 		}else {
-			logger.info("No products exist for the searched text: "+searchKey);
+			logger.info(String.format("No products exist for the searched text: %s", searchKey));
 			Assert.assertEquals(searchResultsPage.getNoResultsText(),NO_PRODUCTS_SEARCH_RESULTS);
 		}
 

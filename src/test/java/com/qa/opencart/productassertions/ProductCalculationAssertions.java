@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.qa.opencart.calculationdecorator.CalculateTotal;
 import com.qa.opencart.calculationdecorator.TaxCalculation;
 import org.testng.asserts.SoftAssert;
 
@@ -34,7 +33,7 @@ public class ProductCalculationAssertions {
 
 	@Step("Verify the total in the product details table for the delivery country {0}, product name {1} with quantity {2}")
 	public void validateTotalInProductDetailsTable(String deliveryCountry, String productName, int quantity) {
-		double expectedTotalInProductDetailsTable = 0.0;
+		double expectedTotalInProductDetailsTable;
 		double actualTotalInProductDetailsTable = 0;
 
 		if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
@@ -120,7 +119,7 @@ public class ProductCalculationAssertions {
 			for (Entry<String, String[]> entry : actualProductDetails.entrySet()) {
 				actualProductTotalWithoutTaxesMap.put(entry.getKey(), StringUtil.removeSpecialCharacters(entry.getValue()[3]));
 			}
-			double costWithoutTaxes =  0.0;
+			double costWithoutTaxes;
 			for(Entry<String, Integer> entry : productQuantityMap.entrySet()) {
 				if(deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)){
 					costWithoutTaxes = CostCalculation.calculateUnitPrice(entry.getKey(), entry.getValue());

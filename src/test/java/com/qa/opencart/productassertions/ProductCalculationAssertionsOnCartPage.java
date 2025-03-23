@@ -65,7 +65,7 @@ public class ProductCalculationAssertionsOnCartPage {
 
     @Step("Verify the total VAT for {0} delivery")
     public void validateVAT(String deliveryCountry, Map<String,Integer> productQuantityMap){
-        double expectedVAT = 0.0;
+        double expectedVAT;
         double actualVAT = 0.0;
         if (deliveryCountry.equals(AppConstants.COUNTRY_WITH_TAXES)) {
             expectedVAT = CostCalculation.calculateVATForMultipleProducts(productQuantityMap);
